@@ -44,7 +44,7 @@
     <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Messages\BaseMessage.cs" />
     <Compile Include="Messages\ClientMessages\ClientMessage.cs" />
-    <Compile Include="Messages\ClientMessages\ClientPayload.cs" />
+    <Compile Include="Messages\ClientMessages\RequestLoginMessage.cs" />
     <Compile Include="Messages\ClientMessages\RequestRegistrationMessage.cs" />
     <Compile Include="Messages\ServerMessages\ServerMessage.cs" />
     <Compile Include="Models\GameRoom.cs" />

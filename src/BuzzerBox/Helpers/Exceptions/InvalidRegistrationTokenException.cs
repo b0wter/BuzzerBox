@@ -5,7 +5,21 @@ using System.Threading.Tasks;
 
 namespace BuzzerBox.Helpers.Exceptions
 {
-    public class InvalidRegistrationTokenException : Exception
+    public class InvalidRegistrationTokenException : ErrorCodeException
     {
+        public override string Code => "ERR03";
+        public override string FallbackMessage => "The provided registration token is invalid.";
+
+        /*
+        public InvalidRegistrationTokenException() : base(string.Empty)
+        {
+            //
+        }
+
+        public InvalidRegistrationTokenException(string message) : base(message)
+        {
+            //
+        }
+        */
     }
 }

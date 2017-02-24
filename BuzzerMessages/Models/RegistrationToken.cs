@@ -27,7 +27,10 @@ namespace BuzzerEntities.Models
         /// Get/sets of this token has been used. A token can only be used for a single registration.
         /// </summary>
         public bool WasUsed { get; set; }
-
+        /// <summary>
+        /// Easy (and UNSAFE way to make creating tokens look random when creating a bunch of them at once.
+        /// </summary>
+        private static int tokenCounter = 0;
         /// <summary>
         /// Generates a new random token. The token consists of upper- and lower case letters, as well as numbers.
         /// </summary>
@@ -44,8 +47,10 @@ namespace BuzzerEntities.Models
         private string CreateRandomToken()
         {
             var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            var stringChars = new char[8];
-            var random = new Random();
+            var stringChars = new char[16];
+            
+            var random = new Random(Environment.TickCount + tokenCounter);
+            ++tokenCounter;
 
             for (int i = 0; i < stringChars.Length; i++)
             {

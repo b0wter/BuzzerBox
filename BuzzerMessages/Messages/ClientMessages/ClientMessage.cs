@@ -30,9 +30,6 @@ namespace BuzzerEntities.ClientMessages.Messages
     /// </summary>
     public abstract class ClientPostMessage : ClientMessage
     {
-        // Additional parameters that are send in the post body.
-        public ClientPayload Parameters { get; set; }
-
         public override string ToJson()
         {
             return JsonConvert.SerializeObject(this);

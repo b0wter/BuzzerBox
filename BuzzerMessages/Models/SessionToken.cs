@@ -12,6 +12,10 @@ namespace BuzzerEntities.Models
     public class SessionToken
     {
         /// <summary>
+        /// Primary key for the database.
+        /// </summary>
+        public int Id { get; set; }
+        /// <summary>
         /// Actual session token. Must be unique.
         /// </summary>
         public string Token { get; set; }
@@ -27,6 +31,26 @@ namespace BuzzerEntities.Models
         public SessionToken()
         {
             CreationDate = DateTime.Now;
+            Token = CreateRandomToken();
+        }
+
+        /// <summary>
+        /// Creates a random token from upper- and lower letters and numbers.
+        /// </summary>
+        /// <returns></returns>
+        private static string CreateRandomToken()
+        {
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var stringChars = new char[16];
+            var random = new Random();
+
+            for (int i = 0; i < stringChars.Length; i++)
+            {
+                stringChars[i] = chars[random.Next(chars.Length)];
+            }
+
+            var finalString = new String(stringChars);
+            return finalString;
         }
     }
 }

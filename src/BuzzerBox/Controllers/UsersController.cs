@@ -35,29 +35,82 @@ namespace BuzzerBox.Controllers
 
         // GET api/users/5
         [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/users
-        [HttpPost]
-        public void Post([FromBody]string value)
-        {
-        }
-
-        [HttpPost("create")]
-        public JsonResult CreateUser([FromBody] string value)
+        public JsonResult Get(int id)
         {
             try
             {
-                var requestRegistrationMessage = JsonConvert.DeserializeObject<RequestRegistrationMessage>(value);
-                return HandleUserRegistration(requestRegistrationMessage);
+                var user = GetUserInformation(id);
+                return new JsonResult(user);
+            }
+            catch(ErrorCodeException ex)
+            {
+                return ex.ToJsonResult();
             }
             catch(Exception ex)
             {
-                return new JsonResult(CreateErrorResult(ex));
+                return ex.ToJsonResult();
             }
+        }
+
+        private FilteredUser GetUserInformation(int id)
+        {
+            var user = context.Users.FirstOrDefault(u => u.Id == id);
+            if (user != null)
+                return FilteredUser.FromUser(user);
+            else
+                throw new UserIdDoesNotExistException();
+        }
+
+        [HttpPost("create")]
+        public JsonResult CreateUser([FromBody] RequestRegistrationMessage message)
+        {
+            try
+            {
+                HandleUserRegistration(message);
+                var sessionToken = LogUserIn(message.UserName, message.Password);
+                return new JsonResult(sessionToken);
+            }
+            catch(ErrorCodeException ex)
+            {
+                return ex.ToJsonResult();
+            }
+            catch(Exception ex)
+            {
+                return ex.ToJsonResult();
+            }
+        }
+
+        [HttpPost]
+        public JsonResult UserLogin([FromBody] RequestLoginMessage message)
+        {
+            try
+            {
+                var sessionToken = LogUserIn(message.Username, message.Passwort);
+                return new JsonResult(sessionToken);
+            }
+            catch(ErrorCodeException ex)
+            {
+                return ex.ToJsonResult();
+            }
+            catch(Exception ex)
+            {
+                return ex.ToJsonResult();
+            }
+        }
+
+        [HttpGet("new/{id}")]
+        public JsonResult CreateNewRegistrationTokens(int id)
+        {
+#if DEBUG
+            var newTokens = new List<RegistrationToken>(id);
+            for (int i = 0; i < id; i++)
+                newTokens.Add(new RegistrationToken());
+            context.RegistrationTokens.AddRange(newTokens);
+            context.SaveChanges();
+            return new JsonResult(newTokens.Select(t => t.Token));
+#else
+            return new JsonResult("Tokens cannot be generated automatically. Please ask the administrator for a new token.");
+#endif
         }
 
         /// <summary>
@@ -69,7 +122,7 @@ namespace BuzzerBox.Controllers
             ValidateRegistrationToken(message.RegistrationToken);
             ValidateRegistrationUsername(message.UserName);
             ValidateRegistrationPassword(message.Password);
-            var user = CreateNewUser(message.UserName, message.Password);
+            var user = CreateNewUser(message.UserName, message.Password, message.RegistrationToken);
             SaveUserToDataBase(user);
         }
 
@@ -99,11 +152,18 @@ namespace BuzzerBox.Controllers
         /// <param name="password"></param>
         private void ValidateRegistrationPassword(string password)
         {
-            if (password == null || password.Length <= 6)
-                throw new InvalidRegistrationPasswordException();
+            if (password == null || password.Length <= Crypto.MINIMUM_PASSWORD_LENGTH)
+                throw new InvalidRegistrationPasswordException($"Passwords need to be at least {Crypto.MINIMUM_PASSWORD_LENGTH} characters long.");
         }
 
-        private User CreateNewUser(string username, string password)
+        /// <summary>
+        /// Creates a new user.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private User CreateNewUser(string username, string password, string token)
         {
             string salt = Convert.ToBase64String(Crypto.CreateSalt());
             var user = new User
@@ -111,11 +171,16 @@ namespace BuzzerBox.Controllers
                 Level = UserLevels.Default,
                 Name = username,
                 Salt = salt,
+                RegistrationToken = token,
                 PasswordHash = Crypto.CreatePasswordHash(password, salt)
             };
             return user;
         }
 
+        /// <summary>
+        /// Persists the user in the database.
+        /// </summary>
+        /// <param name="user"></param>
         private void SaveUserToDataBase(User user)
         {
             context.Users.Add(user);
@@ -132,6 +197,13 @@ namespace BuzzerBox.Controllers
             context.SaveChanges();
         }
 
+        /// <summary>
+        /// Logs a user in and returns a session token if successful.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <exception cref="FailedLoginException">Thrown if supplied credentials do not match the stored ones.</exception>
+        /// <returns></returns>
         private SessionToken LogUserIn(string username, string password)
         {
             // check if the user exists
@@ -144,11 +216,18 @@ namespace BuzzerBox.Controllers
             if (user.PasswordHash != hash)
                 throw new FailedLoginException("The given password does not match the stored hash.");
 
-            // create a new session token (and delete any old ones)
+            // delete any old tokens
             context.SessionTokens.RemoveRange(context.SessionTokens.Where(x => x.UserId == user.Id));
+
+            // create a new token
+            var sessionToken = new SessionToken
+            {
+                UserId = user.Id,
+            };
+            context.SessionTokens.Add(sessionToken);
             context.SaveChanges();
 
-
+            return sessionToken;
         }
 
         /// <summary>

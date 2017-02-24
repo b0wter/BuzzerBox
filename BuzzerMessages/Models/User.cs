@@ -29,10 +29,6 @@ namespace BuzzerEntities.Models
         /// Priviledge level of the user.
         /// </summary>
         public UserLevels Level { get; set; }
-        /// <summary>
-        /// Salt used to harden the password hash (Base64 encoded).
-        /// </summary>
-        public string Salt { get; set; }
 
         /// <summary>
         /// Creates an instance of this user that does not include any sensitive information.
@@ -55,7 +51,17 @@ namespace BuzzerEntities.Models
     /// </summary>
     public class User : FilteredUser
     {
+        /// <summary>
+        /// Hash of the password. Passwords are derived using Pbkdf2 and HMACSHA256 with 10,000 iterations.
+        /// </summary>
         public string PasswordHash { get; set; }
+        /// <summary>
+        /// Token that was used for the registration.
+        /// </summary>
         public string RegistrationToken { get; set; }
+        /// <summary>
+        /// Salt used to harden the password hash (Base64 encoded).
+        /// </summary>
+        public string Salt { get; set; }
     }
 }

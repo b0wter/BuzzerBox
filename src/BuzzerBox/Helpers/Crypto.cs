@@ -4,12 +4,14 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using BuzzerBox.Helpers.Exceptions;
 
 namespace BuzzerBox.Helpers
 {
     public static class Crypto
     {
         private const int HASH_ITERATION_COUNT = 10000;
+        public const int MINIMUM_PASSWORD_LENGTH = 6;
 
         /// <summary>
         /// Creates a 256 Bit hash using Pbkdf2 with 10000 iterations of HMACSHA1.
@@ -19,7 +21,7 @@ namespace BuzzerBox.Helpers
         /// <returns></returns>
         internal static string CreatePasswordHash(string password, byte[] salt)
         {
-            string hash = Convert.ToBase64String(KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA1, HASH_ITERATION_COUNT, 256 / 8));
+            string hash = Convert.ToBase64String(KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA256, HASH_ITERATION_COUNT, 256 / 8));
             return hash;
         }
 
