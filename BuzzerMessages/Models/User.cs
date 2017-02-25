@@ -29,6 +29,14 @@ namespace BuzzerEntities.Models
         /// Priviledge level of the user.
         /// </summary>
         public UserLevels Level { get; set; }
+        /// <summary>
+        /// Current token for the session of the user. There can only be one.
+        /// </summary>
+        public SessionToken SessionToken { get; set; }
+        /// <summary>
+        /// Instances of all the votes cast by this user.
+        /// </summary>
+        public List<Vote> Votes { get; set; }
 
         /// <summary>
         /// Creates an instance of this user that does not include any sensitive information.

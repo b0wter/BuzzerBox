@@ -24,16 +24,28 @@ namespace BuzzerBox.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // the room entity is on one end of the depedency chain
             modelBuilder.Entity<Room>().ToTable("Rooms");
-            modelBuilder.Entity<Question>().ToTable("Questions");
+            // the user entity is on one end of the dependency chain
             modelBuilder.Entity<User>().ToTable("Users");
-            modelBuilder.Entity<Vote>().ToTable("Votes");
-            modelBuilder.Entity<Response>().ToTable("Responses");
+            modelBuilder.Entity<User>().Property(u => u.Name).IsRequired();
 
+            modelBuilder.Entity<Question>().ToTable("Questions");
+            modelBuilder.Entity<Question>().HasOne(q => q.Room).WithMany(r => r.Questions).HasForeignKey(q => q.RoomId);
+
+            modelBuilder.Entity<Response>().ToTable("Responses");
+            modelBuilder.Entity<Response>().HasOne(r => r.Question).WithMany(q => q.Responses).HasForeignKey(r => r.QuestionId);
+
+            modelBuilder.Entity<Vote>().ToTable("Votes");
+            modelBuilder.Entity<Vote>().HasOne(v => v.Response).WithMany(r => r.Votes).HasForeignKey(v => v.ResponseId);
+            modelBuilder.Entity<Vote>().HasOne(v => v.User).WithMany(u => u.Votes).HasForeignKey(v => v.UserId);
+
+            // RegistrationTokens dont need a reference to the user whom they are used by.
             modelBuilder.Entity<RegistrationToken>().ToTable("RegistrationTokens");
             modelBuilder.Entity<RegistrationToken>().HasAlternateKey(s => s.Token).HasName("AlternateKey_Token");
 
             modelBuilder.Entity<SessionToken>().ToTable("SessionTokens");
+            modelBuilder.Entity<SessionToken>().HasOne(t => t.User).WithOne(u => u.SessionToken);
             modelBuilder.Entity<SessionToken>().HasAlternateKey(s => s.Token).HasName("AlternateKey_Token");
         }
     }

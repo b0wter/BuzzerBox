@@ -1,5 +1,8 @@
 ﻿using BuzzerBox.Data;
+using BuzzerBox.Helpers.Exceptions;
+using BuzzerEntities.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +21,13 @@ namespace BuzzerBox.Controllers
 
         protected void ValidateSessionToken(string token)
         {
+            if (!context.SessionTokens.Any(t => t.Token == token))
+                throw new InvalidSessionTokenException();
+        }
 
+        protected User GetUserFromSessionToken(string token)
+        {
+            return context.SessionTokens.Include(y => y.User).First(x => x.Token == token).User;
         }
     }
 }

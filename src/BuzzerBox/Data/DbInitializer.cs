@@ -55,19 +55,8 @@ namespace BuzzerBox.Data
             }
             context.SaveChanges();
 
-            // Add at least a root user and a guest user.
+            // Add a few RegistrationTokens to enable the creation of new users.
             //
-            var users = new User[]
-            {
-                new User { Name = "root", Level = UserLevels.Admin },
-                new User {Name = "guest", Level = UserLevels.Guest },
-            };
-            foreach(var user in users)
-            {
-                context.Users.Add(user);
-            }
-            context.SaveChanges();
-
             var tokens = new RegistrationToken[]
             {
                 new RegistrationToken(),

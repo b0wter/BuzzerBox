@@ -56,7 +56,14 @@ namespace BuzzerBox.Helpers.Exceptions
 #if DEBUG
             response.Exception = this.InnerException;
 #endif
+            response = AddCustomElementsToJsonResult(response);
             return new JsonResult(response);
+        }
+
+        protected virtual dynamic AddCustomElementsToJsonResult(dynamic obj)
+        {
+            // this gives derived class the ability to set additional members
+            return obj;
         }
     }
 }

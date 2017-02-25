@@ -14,6 +14,10 @@ namespace BuzzerEntities.Models
         /// </summary>
         public int RoomId { get; set; }
         /// <summary>
+        /// Room to which this question belongs.
+        /// </summary>
+        public Room Room { get; set; }
+        /// <summary>
         /// Text of question asked.
         /// </summary>
         public string Title { get; set; }

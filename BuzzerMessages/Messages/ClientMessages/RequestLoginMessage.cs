@@ -10,7 +10,7 @@ namespace BuzzerEntities.Messages.ClientMessages
     public class RequestLoginMessage : ClientPostMessage
     {
         public string Username { get; set; }
-        public string Passwort { get; set; }
+        public string Password { get; set; }
         public override string RemotePath => "api/users/login";
     }
 }

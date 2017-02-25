@@ -12,9 +12,9 @@ namespace BuzzerEntities.Models
     {
         public int Id { get; set; }
         /// <summary>
-        /// Id of the question this vote is for.
+        /// Instance of the response that this vote belongs to.
         /// </summary>
-        public int QuestionId { get; set; }
+        public Response Response { get; set; }
         /// <summary>
         /// Id of the response this vote is for.
         /// </summary>
@@ -23,5 +23,9 @@ namespace BuzzerEntities.Models
         /// Id of the user that voted.
         /// </summary>
         public int UserId { get; set; }
+        /// <summary>
+        /// Instance of the user this vote belongs to.
+        /// </summary>
+        public User User { get; set; }
     }
 }

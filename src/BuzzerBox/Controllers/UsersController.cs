@@ -16,29 +16,40 @@ using BuzzerBox.Helpers;
 namespace BuzzerBox.Controllers
 {
     [Route("api/[controller]")]
-    public class UsersController : Controller
+    public class UsersController : BaseController
     {
-        private readonly BuzzerContext context;
-
-        public UsersController(BuzzerContext context)
+        /// <summary>
+        /// The user controller handles all operations related to user interactions like login, user registration, ...
+        /// </summary>
+        /// <param name="context"></param>
+        public UsersController(BuzzerContext context) : base(context)
         {
-            this.context = context;
+            //
         }
 
         // GET: api/users
         [HttpGet]
-        public JsonResult Get()
+        public JsonResult Get([RequiredFromQuery] string sessionToken)
         {
-            var filteredUsers = FilterSensitiveInformation(context.Users.ToList());
-            return new JsonResult(filteredUsers);
+            try
+            {
+                ValidateSessionToken(sessionToken);
+                var filteredUsers = FilterSensitiveInformation(context.Users.ToList());
+                return new JsonResult(filteredUsers);
+            }
+            catch(ErrorCodeException ex)
+            {
+                return ex.ToJsonResult();
+            }
         }
 
         // GET api/users/5
         [HttpGet("{id}")]
-        public JsonResult Get(int id)
+        public JsonResult Get([RequiredFromQuery] string sessionToken, int id)
         {
             try
             {
+                ValidateSessionToken(sessionToken);
                 var user = GetUserInformation(id);
                 return new JsonResult(user);
             }
@@ -52,6 +63,11 @@ namespace BuzzerBox.Controllers
             }
         }
 
+        /// <summary>
+        /// Gets the non-sensitive information of the user with the given id.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         private FilteredUser GetUserInformation(int id)
         {
             var user = context.Users.FirstOrDefault(u => u.Id == id);
@@ -80,12 +96,12 @@ namespace BuzzerBox.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("login")]
         public JsonResult UserLogin([FromBody] RequestLoginMessage message)
         {
             try
             {
-                var sessionToken = LogUserIn(message.Username, message.Passwort);
+                var sessionToken = LogUserIn(message.Username, message.Password);
                 return new JsonResult(sessionToken);
             }
             catch(ErrorCodeException ex)
@@ -142,6 +158,8 @@ namespace BuzzerBox.Controllers
         /// <param name="username"></param>
         private void ValidateRegistrationUsername(string username)
         {
+            if (string.IsNullOrWhiteSpace(username))
+                throw new IncompleteRequestException("username");
             if (context.Users.Any(x => x.Name == username))
                 throw new UsernameAlreadyInUseException();
         }
@@ -152,7 +170,7 @@ namespace BuzzerBox.Controllers
         /// <param name="password"></param>
         private void ValidateRegistrationPassword(string password)
         {
-            if (password == null || password.Length <= Crypto.MINIMUM_PASSWORD_LENGTH)
+            if (password == null || password.Length < Crypto.MINIMUM_PASSWORD_LENGTH)
                 throw new InvalidRegistrationPasswordException($"Passwords need to be at least {Crypto.MINIMUM_PASSWORD_LENGTH} characters long.");
         }
 

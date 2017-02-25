@@ -4,26 +4,39 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using BuzzerBox.Data;
+using BuzzerBox.Helpers;
+using BuzzerBox.Helpers.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace BuzzerBox.Controllers
 {
     [Route("api/[controller]")]
-    public class QuestionsController : Controller
+    public class QuestionsController : BaseController
     {
-        private readonly BuzzerContext context;
-
-        public QuestionsController(BuzzerContext context)
+        public QuestionsController(BuzzerContext context) : base(context)
         {
-            this.context = context;
+            //
         }
 
         // GET: api/values
         [HttpGet]
-        public JsonResult Get()
+        public JsonResult Get([RequiredFromQuery] string sessionToken)
         {
-            return new JsonResult(context.Questions.ToList());
+            try
+            {
+                ValidateSessionToken(sessionToken);
+                return new JsonResult(context.Questions.Include(q => q.Responses).ThenInclude(r => r.Votes).AsNoTracking().ToList());
+            }
+            catch(ErrorCodeException ex)
+            {
+                return ex.ToJsonResult();
+            }
+            catch(Exception ex)
+            {
+                return ex.ToJsonResult();
+            }
         }
 
         // GET api/values/5

@@ -13,8 +13,16 @@ namespace BuzzerEntities.Models
         /// </summary>
         public int QuestionId { get; set; }
         /// <summary>
+        /// Instance of the question this response belongs to.
+        /// </summary>
+        public Question Question { get; set; }
+        /// <summary>
         /// Display text of the response.
         /// </summary>
         public string Title { get; set; }
+        /// <summary>
+        /// Votes cast for this question.
+        /// </summary>
+        public List<Vote> Votes { get; set; }
     }
 }

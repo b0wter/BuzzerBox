@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,11 @@ namespace BuzzerEntities.Models
         /// Id of the user this token belongs to.
         /// </summary>
         public int UserId { get; set; }
+        /// <summary>
+        /// Instance of the user tied to this session token.
+        /// </summary>
+        [JsonIgnore]
+        public User User { get; set; }
         /// <summary>
         /// Time of the creation of this session token.
         /// </summary>
