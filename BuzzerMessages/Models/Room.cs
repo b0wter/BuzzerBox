@@ -10,9 +10,21 @@ namespace BuzzerEntities.Models
     /// </summary>
     public class Room
     {
+        /// <summary>
+        /// Primary key for the database.
+        /// </summary>
         public int Id { get; set; }
+        /// <summary>
+        /// Name of the room. Is displayed in the clients.
+        /// </summary>
         public string Title { get; set; }
+        /// <summary>
+        /// Description of the room.
+        /// </summary>
         public string Description { get; set; }
+        /// <summary>
+        /// List of all questions posted to this room.
+        /// </summary>
         public List<Question> Questions { get; set; }
     }
 }

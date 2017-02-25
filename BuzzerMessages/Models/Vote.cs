@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ namespace BuzzerEntities.Models
         /// <summary>
         /// Instance of the user this vote belongs to.
         /// </summary>
+        [JsonIgnore]
         public User User { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace BuzzerEntities.Models
         /// <summary>
         /// Instance of the question this response belongs to.
         /// </summary>
+        [JsonIgnore]
         public Question Question { get; set; }
         /// <summary>
         /// Display text of the response.

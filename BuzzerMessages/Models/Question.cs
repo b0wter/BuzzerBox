@@ -1,4 +1,5 @@
 ﻿using BuzzerEntities.Helpers;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace BuzzerEntities.Models
         /// <summary>
         /// Room to which this question belongs.
         /// </summary>
+        [JsonIgnore]
         public Room Room { get; set; }
         /// <summary>
         /// Text of question asked.
