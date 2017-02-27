@@ -40,8 +40,6 @@ namespace BuzzerBox
             services.AddApplicationInsightsTelemetry(Configuration);
             services.AddMvc();
 
-            //var optionsBuilder = new DbContextOptionsBuilder<BuzzerContext>();
-            //optionsBuilder.UseSqlite("Filename=./buzzer.db");
             services.AddDbContext<BuzzerContext>(options => options.UseSqlite("Filename=./buzzer.db"));
         }
 

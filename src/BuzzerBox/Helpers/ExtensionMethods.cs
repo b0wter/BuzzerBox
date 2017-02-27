@@ -16,6 +16,11 @@ namespace BuzzerBox.Helpers
             return dtDateTime;
         }
 
+        public static long ToUtcUnixTimestamp(this DateTime date)
+        {
+            return (long)date.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+        }
+
         public static JsonResult ToJsonResult(this Exception ex)
         {
             dynamic response = new ExpandoObject();

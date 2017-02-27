@@ -19,15 +19,26 @@ namespace BuzzerBox.Controllers
             this.context = context;
         }
 
-        protected void ValidateSessionToken(string token)
+        /// <summary>
+        /// Tests if <paramref name="token"/> corresponds to a valid session token.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns>Instance of the session token belonging to this token.</returns>
+        protected SessionToken ValidateSessionToken(string token)
         {
-            if (!context.SessionTokens.Any(t => t.Token == token))
-                throw new InvalidSessionTokenException();
-        }
+            var sessionToken = context.SessionTokens.Include(x => x.User).FirstOrDefault(x => x.Token == token);
 
-        protected User GetUserFromSessionToken(string token)
-        {
-            return context.SessionTokens.Include(y => y.User).First(x => x.Token == token).User;
+            if (sessionToken == null)
+                throw new InvalidSessionTokenException();
+        
+            if(sessionToken.User == null)
+            {
+                // This should never happen. A session token needs to be tied to a user. Otherwise its worthless.
+                context.SessionTokens.RemoveRange(context.SessionTokens.Where(x => x.Token == token));
+                throw new InvalidSessionTokenException();
+            }
+
+            return sessionToken;
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BuzzerEntities.Helpers;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,6 +24,15 @@ namespace BuzzerEntities.Models
         /// Description of the room.
         /// </summary>
         public string Description { get; set; }
+        /// <summary>
+        /// Timestamp of the creation of this room. Stored as an utc unix timestamp (seconds).
+        /// </summary>
+        public long Timestamp { get; set; }
+        /// <summary>
+        /// Returns the timestamp as an instance of <see cref="DateTime"/>.
+        /// </summary>
+        [JsonIgnore]
+        public DateTime ToDateTime => Converter.UnixTimeStampToDateTime(Timestamp);
         /// <summary>
         /// List of all questions posted to this room.
         /// </summary>

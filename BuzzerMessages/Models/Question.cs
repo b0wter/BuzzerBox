@@ -34,6 +34,7 @@ namespace BuzzerEntities.Models
         /// <summary>
         /// DateTime representation of <see cref="Timestamp"/>.
         /// </summary>
+        [JsonIgnore]
         public DateTime DateTime => Converter.UnixTimeStampToDateTime(Timestamp);
         /// <summary>
         /// List of possible responses for this question.

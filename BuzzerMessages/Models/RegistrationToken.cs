@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BuzzerEntities.Helpers;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +22,14 @@ namespace BuzzerEntities.Models
         /// </summary>
         public string Token { get; set; }
         /// <summary>
-        /// Time of the creation of this token.
+        /// DateTime representation of <see cref="Timestamp"/>.
         /// </summary>
-        public DateTime CreationTime { get; private set; }
+        [JsonIgnore]
+        public DateTime DateTime => Converter.UnixTimeStampToDateTime(Timestamp);
+        /// <summary>
+        /// Time of the creation of this token. Given as a UNIX epoch (seconds).
+        /// </summary>
+        public long Timestamp { get; set; }
         /// <summary>
         /// Get/sets of this token has been used. A token can only be used for a single registration.
         /// </summary>
@@ -36,7 +43,7 @@ namespace BuzzerEntities.Models
         /// </summary>
         public RegistrationToken()
         {
-            CreationTime = DateTime.Now;
+            Timestamp = Converter.DateTimeToUnixTimeStamp(DateTime.Now);
             Token = CreateRandomToken();
         }
 

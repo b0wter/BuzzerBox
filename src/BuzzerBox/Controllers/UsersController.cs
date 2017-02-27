@@ -29,7 +29,7 @@ namespace BuzzerBox.Controllers
 
         // GET: api/users
         [HttpGet]
-        public JsonResult Get([RequiredFromQuery] string sessionToken)
+        public JsonResult GetUserList([RequiredFromQuery] string sessionToken)
         {
             try
             {
@@ -45,13 +45,35 @@ namespace BuzzerBox.Controllers
 
         // GET api/users/5
         [HttpGet("{id}")]
-        public JsonResult Get([RequiredFromQuery] string sessionToken, int id)
+        public JsonResult GetUserDetails([RequiredFromQuery] string sessionToken, int id)
         {
             try
             {
                 ValidateSessionToken(sessionToken);
                 var user = GetUserInformation(id);
                 return new JsonResult(user);
+            }
+            catch(ErrorCodeException ex)
+            {
+                return ex.ToJsonResult();
+            }
+            catch(Exception ex)
+            {
+                return ex.ToJsonResult();
+            }
+        }
+
+        /// <summary>
+        /// Returns all the unused registration tokens. Needs to be removed for production use.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("free")]
+        public JsonResult GetFreeRegistrationTokens()
+        {
+            //TODO: REMOVE THIS FUNCTION FOR PRODUCTION!
+            try
+            {
+                return new JsonResult(context.RegistrationTokens.Where(t => t.WasUsed == false).ToList());
             }
             catch(ErrorCodeException ex)
             {
@@ -227,12 +249,12 @@ namespace BuzzerBox.Controllers
             // check if the user exists
             var user = context.Users.FirstOrDefault(u => u.Name == username);
             if (user == null)
-                throw new FailedLoginException("The given username does not exist.");
+                throw new FailedLoginException();
 
             // check that the hashes match
             var hash = Crypto.CreatePasswordHash(password, user.Salt);
             if (user.PasswordHash != hash)
-                throw new FailedLoginException("The given password does not match the stored hash.");
+                throw new FailedLoginException();
 
             // delete any old tokens
             context.SessionTokens.RemoveRange(context.SessionTokens.Where(x => x.UserId == user.Id));

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,12 +31,9 @@ namespace BuzzerEntities.Models
         /// </summary>
         public UserLevels Level { get; set; }
         /// <summary>
-        /// Current token for the session of the user. There can only be one.
-        /// </summary>
-        public SessionToken SessionToken { get; set; }
-        /// <summary>
         /// Instances of all the votes cast by this user.
         /// </summary>
+        [JsonIgnore]
         public List<Vote> Votes { get; set; }
 
         /// <summary>
@@ -59,6 +57,11 @@ namespace BuzzerEntities.Models
     /// </summary>
     public class User : FilteredUser
     {
+        /// <summary>
+        /// List of active tokens for the given user. Multiple tokens are required for multi-device support.
+        /// </summary>
+        [JsonIgnore]
+        public List<SessionToken> SessionToken { get; set; }
         /// <summary>
         /// Hash of the password. Passwords are derived using Pbkdf2 and HMACSHA256 with 10,000 iterations.
         /// </summary>

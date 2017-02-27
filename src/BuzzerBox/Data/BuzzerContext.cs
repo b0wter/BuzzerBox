@@ -45,7 +45,7 @@ namespace BuzzerBox.Data
             modelBuilder.Entity<RegistrationToken>().HasAlternateKey(s => s.Token).HasName("AlternateKey_Token");
 
             modelBuilder.Entity<SessionToken>().ToTable("SessionTokens");
-            modelBuilder.Entity<SessionToken>().HasOne(t => t.User).WithOne(u => u.SessionToken);
+            modelBuilder.Entity<SessionToken>().HasOne(t => t.User).WithMany(u => u.SessionToken).HasForeignKey(t => t.UserId);
             modelBuilder.Entity<SessionToken>().HasAlternateKey(s => s.Token).HasName("AlternateKey_Token");
         }
     }

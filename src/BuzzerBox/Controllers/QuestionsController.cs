@@ -8,8 +8,6 @@ using BuzzerBox.Helpers;
 using BuzzerBox.Helpers.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
-// For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
-
 namespace BuzzerBox.Controllers
 {
     [Route("api/[controller]")]
@@ -22,12 +20,12 @@ namespace BuzzerBox.Controllers
 
         // GET: api/values
         [HttpGet]
-        public JsonResult Get([RequiredFromQuery] string sessionToken)
+        public JsonResult Get([RequiredFromQuery] string sessionToken, [FromQuery] long timeStamp = 0)
         {
             try
             {
                 ValidateSessionToken(sessionToken);
-                return new JsonResult(context.Questions.Include(q => q.Responses).ThenInclude(r => r.Votes).AsNoTracking().ToList());
+                return new JsonResult(context.Questions.Include(q => q.Responses).ThenInclude(r => r.Votes).Where(q => q.Timestamp >= timeStamp).AsNoTracking().ToList());
             }
             catch(ErrorCodeException ex)
             {
@@ -41,36 +39,22 @@ namespace BuzzerBox.Controllers
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public JsonResult Get(int id)
+        public JsonResult Get([RequiredFromQuery] string sessionToken, int id)
         {
-            return new JsonResult(context.Questions.FirstOrDefault(x => x.Id == id));
-        }
-
-        // POST api/values
-        [HttpPost]
-        public JsonResult Post([FromBody]string value)
-        {
-            var dict = new Dictionary<string, string>();
-            dict.Add("error", "posting to this url is not supported");
-            return new JsonResult(dict);
-        }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public JsonResult Put(int id, [FromBody]string value)
-        {
-            var dict = new Dictionary<string, string>();
-            dict.Add("error", "putting to this url is not supported");
-            return new JsonResult(dict);
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public JsonResult Delete(int id)
-        {
-            var dict = new Dictionary<string, string>();
-            dict.Add("error", "deleting on this url is not supported");
-            return new JsonResult(dict);
+            try
+            {
+                ValidateSessionToken(sessionToken);
+                var question = context.Questions.Include(q => q.Responses).ThenInclude(r => r.Votes).AsNoTracking().First(q => q.Id == id);
+                return new JsonResult(question);
+            }
+            catch(ErrorCodeException ex)
+            {
+                return ex.ToJsonResult();
+            }
+            catch(Exception ex)
+            {
+                return ex.ToJsonResult();
+            }
         }
     }
 }

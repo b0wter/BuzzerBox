@@ -1,4 +1,5 @@
-﻿using BuzzerEntities.Models;
+﻿using BuzzerBox.Helpers;
+using BuzzerEntities.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,35 +31,43 @@ namespace BuzzerBox.Data
             {
                 context.Rooms.Add(room);
             }
-            context.SaveChanges();
 
-            // Add a sample question to the first room, just to see something.
+            // Create an admin user.
             //
-            var questions = new Question[]
+            var salt = Crypto.CreateSalt();
+            var password = "kl;4njgt2349op";
+            var user = new User
             {
-                new Question { Title = "Where to go? :-O", RoomId = 1 }
+                Level = UserLevels.Admin,
+                Name = "root",
+                PasswordHash = Crypto.CreatePasswordHash(password, salt),
+                RegistrationToken = null,
+                Salt = Convert.ToBase64String(salt)
             };
-            foreach(var question in questions)
-            {
-                context.Questions.Add(question);
-            }
-            context.SaveChanges();
-
-            var responses = new Response[]
-            {
-                new Response { Title = "Dont know! :(", QuestionId = 1 },
-                new Response { Title = "Starbucks", QuestionId = 1 }
-            };
-            foreach(var response in responses)
-            {
-                context.Responses.Add(response);
-            }
-            context.SaveChanges();
+            context.Users.Add(user);
 
             // Add a few RegistrationTokens to enable the creation of new users.
             //
             var tokens = new RegistrationToken[]
             {
+                new RegistrationToken(),
+                new RegistrationToken(),
+                new RegistrationToken(),
+                new RegistrationToken(),
+                new RegistrationToken(),
+                new RegistrationToken(),
+                new RegistrationToken(),
+                new RegistrationToken(),
+                new RegistrationToken(),
+                new RegistrationToken(),
+                new RegistrationToken(),
+                new RegistrationToken(),
+                new RegistrationToken(),
+                new RegistrationToken(),
+                new RegistrationToken(),
+                new RegistrationToken(),
+                new RegistrationToken(),
+                new RegistrationToken(),
                 new RegistrationToken(),
                 new RegistrationToken(),
                 new RegistrationToken(),
