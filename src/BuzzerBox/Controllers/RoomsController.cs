@@ -24,14 +24,14 @@ namespace BuzzerBox.Controllers
         
         // GET: api/rooms
         [HttpGet]
-        public JsonResult Get([RequiredFromQuery]string sessionToken, [FromQuery]bool includeQuestions = false, [FromQuery] long sinceTimestamp = 0)
+        public JsonResult Get([RequiredFromQuery]string sessionToken, [FromQuery]bool includeQuestions = false)
         {
             try
             {
                 ValidateSessionToken(sessionToken);
                 IEnumerable<Room> rooms = null;
                 if (includeQuestions)
-                    rooms = context.Rooms.Include(r => r.Questions).ThenInclude(q => q.Responses).Where(r => r.Timestamp >= sinceTimestamp).AsNoTracking().ToList();
+                    rooms = context.Rooms.Include(r => r.Questions).ThenInclude(q => q.Responses).ThenInclude(r => r.Votes).AsNoTracking().ToList();
                 else
                     rooms = context.Rooms.ToList();
                 return new JsonResult(rooms);
@@ -109,6 +109,10 @@ namespace BuzzerBox.Controllers
 
                 vote.Timestamp = DateTime.Now.ToUtcUnixTimestamp();
                 vote.User = token.User;
+
+                // if a new vote is cast we have to delete the old one
+                context.Votes.ToList().RemoveAll(v => v.ResponseId == vote.ResponseId && v.UserId == vote.UserId);
+
                 var result = context.Votes.Add(vote).Entity;
                 context.SaveChanges();
 

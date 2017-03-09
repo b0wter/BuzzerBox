@@ -26,5 +26,9 @@ namespace BuzzerEntities.Models
         /// Votes cast for this question.
         /// </summary>
         public List<Vote> Votes { get; set; }
+        /// <summary>
+        /// Amount of votes cast for this response.
+        /// </summary>
+        public int VoteCount => Votes == null ? 0 : Votes.Count;
     }
 }
