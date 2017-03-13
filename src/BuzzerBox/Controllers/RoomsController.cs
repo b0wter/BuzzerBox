@@ -146,7 +146,7 @@ namespace BuzzerBox.Controllers
                 var token = ValidateSessionToken(sessionToken);
                 var question = context.Questions.First(q => q.Id == questionId);
 
-                if(token.User.Level == UserLevels.Admin || token.UserId == token.UserId)
+                if(token.User.Level == UserLevels.Admin || token.UserId == question.UserId)
                 {
                     question.IsActive = false;
                     context.SaveChanges();
