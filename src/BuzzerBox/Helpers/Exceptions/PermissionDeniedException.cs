@@ -9,5 +9,15 @@ namespace BuzzerBox.Helpers.Exceptions
     {
         public override string Code => "ERR08";
         public override string FallbackMessage => "Your user level is not sufficient to perform this action.";
+
+        public PermissionDeniedException() : base()
+        {
+            //
+        }
+
+        public PermissionDeniedException(string message) : base(message)
+        {
+            //
+        }
     }
 }

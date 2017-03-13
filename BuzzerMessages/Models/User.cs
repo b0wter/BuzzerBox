@@ -35,6 +35,11 @@ namespace BuzzerEntities.Models
         /// </summary>
         [JsonIgnore]
         public List<Vote> Votes { get; set; }
+        /// <summary>
+        /// List of questions posted by this user.
+        /// </summary>
+        [JsonIgnore]
+        public List<Question> Questions { get; set; }
 
         /// <summary>
         /// Creates an instance of this user that does not include any sensitive information.

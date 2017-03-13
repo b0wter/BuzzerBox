@@ -40,5 +40,14 @@ namespace BuzzerEntities.Models
         /// List of possible responses for this question.
         /// </summary>
         public List<Response> Responses { get; set; } = new List<Response>();
+        /// <summary>
+        /// User that posted this question. Only this user or an admin is allowed to close this question.
+        /// </summary>
+        [JsonIgnore]
+        public User User { get; set; }
+        /// <summary>
+        /// Id of the user that posted this question.
+        /// </summary>
+        public int UserId { get; set; }
     }
 }

@@ -80,6 +80,7 @@ namespace BuzzerBox.Controllers
                     throw new IncompleteRequestException("question");
 
                 question.Timestamp = DateTime.Now.ToUtcUnixTimestamp();
+                question.User = token.User;
                 var result = context.Questions.Add(question).Entity;
                 context.SaveChanges();
 
@@ -108,6 +109,13 @@ namespace BuzzerBox.Controllers
                 if (vote == null)
                     throw new IncompleteRequestException("vote");
 
+                if (!context.Responses.Any(r => r.Id == vote.ResponseId))
+                    throw new InvalidEntityException(vote.ResponseId, "response");
+
+                var question = context.Questions.Include(q => q.Responses).First(q => q.Responses.Any(r => r.Id == vote.ResponseId));
+                if (question.IsActive == false)
+                    throw new QuestionClosedException();
+
                 vote.Timestamp = DateTime.Now.ToUtcUnixTimestamp();
                 vote.User = token.User;
 
@@ -124,6 +132,35 @@ namespace BuzzerBox.Controllers
                 return ex.ToJsonResult();
             }
             catch(Exception ex)
+            {
+                return ex.ToJsonResult();
+            }
+        }
+
+        [HttpPost("{roomId}/questions/{questionId}/close")]
+        public JsonResult CloseQuestion([RequiredFromQuery] string sessionToken)
+        {
+            try
+            {
+                var token = ValidateSessionToken(sessionToken);
+                var question = context.Questions.First(q => q.UserId == token.UserId);
+
+                if(token.User.Level == UserLevels.Admin || token.UserId == token.UserId)
+                {
+                    question.IsActive = false;
+                    context.SaveChanges();
+                    return new JsonResult(question);
+                }
+                else
+                {
+                    throw new PermissionDeniedException($"You cannot close this question since it wasn't posted by you and you are not an admin.");
+                }
+            }
+            catch (ErrorCodeException ex)
+            {
+                return ex.ToJsonResult();
+            }
+            catch (Exception ex)
             {
                 return ex.ToJsonResult();
             }

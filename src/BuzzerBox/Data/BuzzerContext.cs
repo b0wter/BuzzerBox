@@ -32,6 +32,7 @@ namespace BuzzerBox.Data
 
             modelBuilder.Entity<Question>().ToTable("Questions");
             modelBuilder.Entity<Question>().HasOne(q => q.Room).WithMany(r => r.Questions).HasForeignKey(q => q.RoomId);
+            modelBuilder.Entity<Question>().HasOne(q => q.User).WithMany(u => u.Questions).HasForeignKey(q => q.UserId);
 
             modelBuilder.Entity<Response>().ToTable("Responses");
             modelBuilder.Entity<Response>().HasOne(r => r.Question).WithMany(q => q.Responses).HasForeignKey(r => r.QuestionId);
