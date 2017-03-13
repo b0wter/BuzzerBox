@@ -98,7 +98,7 @@ namespace BuzzerBox.Controllers
         }
 
         [HttpPost("{roomId}/questions/{questionId}/vote")]
-        public JsonResult PostVote([RequiredFromQuery] string sessionToken, [FromBody] Vote vote)
+        public JsonResult PostVote([RequiredFromQuery] string sessionToken, [FromBody] Vote vote, int roomId, int questionId)
         {
             try
             {
@@ -113,7 +113,7 @@ namespace BuzzerBox.Controllers
                 if (!context.Responses.Any(r => r.Id == vote.ResponseId))
                     throw new InvalidEntityException(vote.ResponseId, "response");
 
-                var question = context.Questions.Include(q => q.Responses).First(q => q.Responses.Any(r => r.Id == vote.ResponseId));
+                var question = context.Questions.First(q => q.Id == questionId);
                 if (question.IsActive == false)
                     throw new QuestionClosedException();
 
