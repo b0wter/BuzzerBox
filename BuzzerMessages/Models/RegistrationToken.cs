@@ -11,7 +11,7 @@ namespace BuzzerEntities.Models
     /// <summary>
     /// A one-time token that is used to create an account.
     /// </summary>
-    public class RegistrationToken
+    public class RegistrationToken : BaseModel
     {
         /// <summary>
         /// Primary key for the database.

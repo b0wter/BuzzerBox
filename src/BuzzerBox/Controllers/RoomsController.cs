@@ -79,6 +79,7 @@ namespace BuzzerBox.Controllers
                 if (question == null)
                     throw new IncompleteRequestException("question");
 
+                question.Timestamp = DateTime.Now.ToUtcUnixTimestamp();
                 var result = context.Questions.Add(question).Entity;
                 context.SaveChanges();
 

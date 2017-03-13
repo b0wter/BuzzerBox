@@ -10,7 +10,7 @@ namespace BuzzerEntities.Models
     /// <summary>
     /// Token used to verify that a user logged in succesfully.
     /// </summary>
-    public class SessionToken
+    public class SessionToken : BaseModel
     {
         /// <summary>
         /// Primary key for the database.

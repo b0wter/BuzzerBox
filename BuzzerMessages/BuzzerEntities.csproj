@@ -47,6 +47,7 @@
     <Compile Include="Messages\ClientMessages\RequestLoginMessage.cs" />
     <Compile Include="Messages\ClientMessages\RequestRegistrationMessage.cs" />
     <Compile Include="Messages\ServerMessages\ServerMessage.cs" />
+    <Compile Include="Models\BaseModel.cs" />
     <Compile Include="Models\GameRoom.cs" />
     <Compile Include="Models\Question.cs" />
     <Compile Include="Models\RegistrationToken.cs" />

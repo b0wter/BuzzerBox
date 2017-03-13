@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BuzzerEntities.Models
 {
-    public class Response
+    public class Response : BaseModel
     {
         public int Id { get; set; }
         /// <summary>

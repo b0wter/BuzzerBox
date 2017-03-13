@@ -10,7 +10,7 @@ namespace BuzzerEntities.Models
     /// <summary>
     /// Model of a regular room. Any user that has at least the <see cref="UserLevels.Default"/> level can post questions.
     /// </summary>
-    public class Room
+    public class Room : BaseModel
     {
         /// <summary>
         /// Primary key for the database.
@@ -36,6 +36,6 @@ namespace BuzzerEntities.Models
         /// <summary>
         /// List of all questions posted to this room.
         /// </summary>
-        public List<Question> Questions { get; set; }
+        public List<Question> Questions { get; set; } = new List<Question>();
     }
 }

@@ -16,7 +16,7 @@ namespace BuzzerEntities.Models
     /// <summary>
     /// A representation of the <see cref="User"/> that doesnt contain any sensitive information.
     /// </summary>
-    public class FilteredUser
+    public class FilteredUser : BaseModel
     {
         /// <summary>
         /// Primary key for the database.

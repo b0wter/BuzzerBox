@@ -5,6 +5,7 @@ using Android.Views;
 using Android.Support.V7.Widget;
 using System.Collections.Generic;
 using BuzzerEntities.Models;
+using BuzzerDroid.Adapters;
 
 namespace BuzzerDroid
 {

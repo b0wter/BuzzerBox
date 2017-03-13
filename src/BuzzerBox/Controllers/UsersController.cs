@@ -257,7 +257,7 @@ namespace BuzzerBox.Controllers
                 throw new FailedLoginException();
 
             // delete any old tokens
-            context.SessionTokens.RemoveRange(context.SessionTokens.Where(x => x.UserId == user.Id));
+            //context.SessionTokens.RemoveRange(context.SessionTokens.Where(x => x.UserId == user.Id));
 
             // create a new token
             var sessionToken = new SessionToken

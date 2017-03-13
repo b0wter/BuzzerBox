@@ -10,7 +10,7 @@ namespace BuzzerEntities.Models
     /// <summary>
     /// Represents a vote that a client has taken for a question.
     /// </summary>
-    public class Vote
+    public class Vote : BaseModel
     {
         public int Id { get; set; }
         /// <summary>
