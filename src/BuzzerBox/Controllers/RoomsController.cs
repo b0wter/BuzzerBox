@@ -67,7 +67,7 @@ namespace BuzzerBox.Controllers
         [HttpGet("{id}")] public JsonResult Get(int id) { return new InvalidSessionTokenException().ToJsonResult(); }
 
         [HttpPost("{roomId}/newQuestion")]
-        public JsonResult PostNewQuestion([RequiredFromQuery] string sessionToken, [FromBody] Question question)
+        public JsonResult PostNewQuestion([RequiredFromQuery] string sessionToken, [FromBody] Question question, int roomId)
         {
             try
             {
@@ -81,6 +81,7 @@ namespace BuzzerBox.Controllers
 
                 question.Timestamp = DateTime.Now.ToUtcUnixTimestamp();
                 question.User = token.User;
+                question.RoomId = roomId;
                 var result = context.Questions.Add(question).Entity;
                 context.SaveChanges();
 
