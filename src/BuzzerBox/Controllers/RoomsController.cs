@@ -139,12 +139,12 @@ namespace BuzzerBox.Controllers
         }
 
         [HttpPost("{roomId}/questions/{questionId}/close")]
-        public JsonResult CloseQuestion([RequiredFromQuery] string sessionToken)
+        public JsonResult CloseQuestion([RequiredFromQuery] string sessionToken, int questionId)
         {
             try
             {
                 var token = ValidateSessionToken(sessionToken);
-                var question = context.Questions.First(q => q.UserId == token.UserId);
+                var question = context.Questions.First(q => q.Id == questionId);
 
                 if(token.User.Level == UserLevels.Admin || token.UserId == token.UserId)
                 {
