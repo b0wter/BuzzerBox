@@ -1,37 +1,31 @@
-﻿using Android.App;
+﻿using System;
+using Android.App;
+using Android.Content;
+using Android.Runtime;
+using Android.Views;
 using Android.Widget;
 using Android.OS;
-using Android.Views;
-using Android.Support.V7.Widget;
-using System.Collections.Generic;
-using BuzzerEntities.Models;
-using BuzzerDroid.Adapters;
+using Android.Support.V7.App;
 
 namespace BuzzerDroid
 {
     [Activity(Label = "BuzzerDroid", MainLauncher = true, Icon = "@drawable/icon")]
-    public class MainActivity : Activity
+    public class MainActivity : AppCompatActivity
     {
-        private RecyclerView roomsRecyclerView;
-        private RecyclerView.LayoutManager roomsRecyclerViewLayoutManager;
-        private RoomsAdapter roomsAdapter;
+        int count = 1;
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
-            SetContentView (Resource.Layout.Main);
-
-
-
-
 
             // Set our view from the "main" layout resource
-        }
+            SetContentView(Resource.Layout.Main);
 
-        public override bool OnCreateOptionsMenu(IMenu menu)
-        {
-            MenuInflater.Inflate(Resource.Menu.menu_roomsActivity, menu);
-            return base.OnPrepareOptionsMenu(menu);
+            // Get our button from the layout resource,
+            // and attach an event to it
+            Button button = FindViewById<Button>(Resource.Id.MyButton);
+
+            button.Click += delegate { button.Text = string.Format("{0} clicks!", count++); };
         }
     }
 }
