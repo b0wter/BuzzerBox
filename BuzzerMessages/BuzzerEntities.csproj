@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Converters\ClientPostMessageConverter.cs" />
     <Compile Include="Helpers\Converters.cs" />
+    <Compile Include="Helpers\Debug.cs" />
     <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Messages\BaseMessage.cs" />
     <Compile Include="Messages\ClientMessages\ClientMessage.cs" />

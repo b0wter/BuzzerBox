@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using BuzzerEntities.Helpers;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,13 +31,18 @@ namespace BuzzerEntities.Models
         [JsonIgnore]
         public User User { get; set; }
         /// <summary>
+        /// Time of the creation of the token. Given as a UNIX epoch (seconds).
+        /// </summary>
+        public long Timestamp { get; set; }
+        /// <summary>
         /// Time of the creation of this session token.
         /// </summary>
-        public DateTime CreationDate { get; private set; }
+        [JsonIgnore]
+        public DateTime DateTime => Converter.UnixTimeStampToDateTime(Timestamp);
 
         public SessionToken()
         {
-            CreationDate = DateTime.Now;
+            Timestamp = DateTime.Now.ToUtcUnixTimestamp();
             Token = CreateRandomToken();
         }
 

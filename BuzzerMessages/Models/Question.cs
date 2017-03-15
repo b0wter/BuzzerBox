@@ -49,5 +49,9 @@ namespace BuzzerEntities.Models
         /// Id of the user that posted this question.
         /// </summary>
         public int UserId { get; set; }
+        /// <summary>
+        /// Sets/Gets if multiple votes of a single user are allowed.
+        /// </summary>
+        public bool AllowMultipleVotes { get; set; }
     }
 }
