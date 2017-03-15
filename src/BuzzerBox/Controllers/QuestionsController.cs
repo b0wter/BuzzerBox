@@ -78,9 +78,7 @@ namespace BuzzerBox.Controllers
                 if (question.IsActive == false)
                     throw new QuestionClosedException();
 
-                
                 ClearOldVotes(question, token.User, responseId);
-                
 
                 var vote = new Vote
                 {
@@ -107,26 +105,33 @@ namespace BuzzerBox.Controllers
             }
         }
 
-        private void ClearOldVotes(Question q, User u, int responseId)
+        private FilteredUser FetchUserVotes(FilteredUser user)
         {
-            context.Entry(u). .Collection(u => u.Votes).Load();
-            
-            /*
-            Es müssen noch alte Stimmen gelöscht werden, nach folgenden Bedingungen:
-                - Wenn die Frage multiple choice erlaubt muss nur sichergestellt werden das es nicht bereits eine Stimme mit der gleichen Response Id gibt.
-                - Wenn die Frage kein multiple choice erlaubt müssen alle alten Stimmen gelöscht werden.
-            */
-            List<Vote> oldVotes = new List<Vote>();
-            if(q.AllowMultipleVotes)
+            var detailedUser = context.Users.Include(u => u.Votes).ThenInclude(v => v.Response).First(u => user.Id == u.Id);
+            return detailedUser;
+        }
+
+        private void ClearOldVotes(Question question, User user, int responseId)
+        {
+            // explicit loading is only supported on .Net Core 1.1 so this needs to be done manually
+            var detailedUser = FetchUserVotes(user);
+            ClearOldVotesWithMatchingResponseId(detailedUser, responseId);
+            ClearOldVoteIfNotMultipleChoice(question, detailedUser);
+        }
+
+        private void ClearOldVotesWithMatchingResponseId(FilteredUser user, int responseId)
+        {
+            var oldVotes = user.Votes.Where(v => v.ResponseId == responseId).ToList();
+            oldVotes.ForEach(o => context.Votes.Remove(o));
+        }
+
+        private void ClearOldVoteIfNotMultipleChoice(Question question, FilteredUser user)
+        {
+            if (question.AllowMultipleVotes == false)
             {
-                oldVotes.AddRange(q.Responses.SelectMany(r => r.Votes).Where(v => v.ResponseId == responseId && v.UserId == u.Id));
+                var oldVotes = user.Votes.Where(v => question.Responses.Any(r => r.Id == v.ResponseId)).ToList();
+                oldVotes.ForEach(o => context.Votes.Remove(o));
             }
-            else
-            {
-                oldVotes.AddRange(q.Responses.SelectMany(r => r.Votes).Where(v => v.UserId == u.Id));
-            }
-            oldVotes.ForEach(v => context.Votes.Remove(v));
-            context.SaveChanges();
         }
 
         [HttpPost("{questionId}/close")]

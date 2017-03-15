@@ -70,14 +70,17 @@ namespace BuzzerEntities.Models
         /// <summary>
         /// Hash of the password. Passwords are derived using Pbkdf2 and HMACSHA256 with 10,000 iterations.
         /// </summary>
+        [JsonIgnore]
         public string PasswordHash { get; set; }
         /// <summary>
         /// Token that was used for the registration.
         /// </summary>
+        [JsonIgnore]
         public string RegistrationToken { get; set; }
         /// <summary>
         /// Salt used to harden the password hash (Base64 encoded).
         /// </summary>
+        [JsonIgnore]
         public string Salt { get; set; }
     }
 }
