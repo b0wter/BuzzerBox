@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+  <android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/viewholder_questions_card_view"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginTop="10dp"
+    android:layout_gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:foreground="?android:attr/selectableItemBackground"
+    >
+
+    <LinearLayout
+      android:id="@+id/viewholder_questions_inner_card_view"
+      android:orientation="vertical"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+      <RelativeLayout
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!--
+        <ProgressBar
+          android:id="@+id/viewholder_questions_activity_indicator"
+          android:layout_width="match_parent"
+          android:layout_height="2dp"
+          android:indeterminate="true"
+          />
+          -->
+
+        <TextView
+          android:id="@+id/viewholder_questions_title_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textSize="22sp"
+          android:text="item" />
+
+        <TextView
+          android:id="@+id/viewholder_questions_room_text"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_below="@id/viewholder_questions_title_text"
+          android:textSize="14sp"/>
+
+        <TextView
+          android:id="@+id/viewholder_questions_votes_text"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_below="@id/viewholder_questions_title_text"
+          android:layout_toRightOf="@id/viewholder_questions_room_text"
+          android:textSize="14sp"/>
+
+      </RelativeLayout>
+
+      <android.support.v7.widget.RecyclerView
+        android:id="@+id/viewholder_questions_response_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+    </LinearLayout>
+  </android.support.v7.widget.CardView>

@@ -23,6 +23,10 @@ namespace BuzzerEntities.ClientMessages.Messages
         /// Path which is added to the base url.
         /// </summary>
         public abstract string RemotePath { get; }
+        /// <summary>
+        /// Type of http message, usually either get or post.
+        /// </summary>
+        public abstract HttpMethods HttpMethod { get; }
     }
 
     /// <summary>
@@ -30,6 +34,8 @@ namespace BuzzerEntities.ClientMessages.Messages
     /// </summary>
     public abstract class ClientPostMessage : ClientMessage
     {
+        public override HttpMethods HttpMethod => HttpMethods.Post;
+
         public override string ToJson()
         {
             return JsonConvert.SerializeObject(this);
@@ -41,9 +47,16 @@ namespace BuzzerEntities.ClientMessages.Messages
     /// </summary>
     public abstract class ClientGetMessage : ClientMessage
     {
+        public override HttpMethods HttpMethod => HttpMethods.Post;
         /// <summary>
         /// List of alll parameters that should be included in the url.
         /// </summary>
         public Dictionary<string, string> UrlParameters { get; protected set; } = new Dictionary<string, string>();
+    }
+
+    public enum HttpMethods
+    {
+        Get,
+        Post
     }
 }

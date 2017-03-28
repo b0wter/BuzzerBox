@@ -1,0 +1,16 @@
+{
+    "Bindings": [
+        {
+            "Typename": "Room",
+            "Endpoint": "/api/rooms"
+        },
+        {
+            "Typename": "Question",
+            "Endpoint": "/api/questions"
+        },
+        {
+            "Typename": "User",
+            "Endpoint": "/api/users"
+        }
+    ]
+}
