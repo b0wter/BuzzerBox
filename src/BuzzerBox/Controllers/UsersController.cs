@@ -161,6 +161,7 @@ namespace BuzzerBox.Controllers
             ValidateRegistrationUsername(message.UserName);
             ValidateRegistrationPassword(message.Password);
             var user = CreateNewUser(message.UserName, message.Password, message.RegistrationToken);
+            CloseRegistrationToken(message.RegistrationToken);
             SaveUserToDataBase(user);
         }
 
@@ -224,6 +225,13 @@ namespace BuzzerBox.Controllers
         private void SaveUserToDataBase(User user)
         {
             context.Users.Add(user);
+            context.SaveChanges();
+        }
+
+        private void CloseRegistrationToken(string token)
+        {
+            var localToken = context.RegistrationTokens.First(t => t.Token == token);
+            localToken.WasUsed = true;
             context.SaveChanges();
         }
 
