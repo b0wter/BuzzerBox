@@ -59,7 +59,7 @@ namespace BuzzerBox.Controllers
         }
 
         [HttpPost("{questionId}/vote/{responseId}")]
-        public JsonResult PostVote([RequiredFromQuery] string sessionToken, int questionId, int responseId)
+        public JsonResult PostVote([RequiredFromQuery] string sessionToken, int questionId, int responseId, [FromQuery] bool includeFullQuestionAsResult = false)
         {
             try
             {
@@ -71,12 +71,14 @@ namespace BuzzerBox.Controllers
                 if (!context.Questions.Any(q => q.Id == questionId))
                     throw new InvalidEntityException(questionId, "question");
 
-                if(!context.Responses.Any(r => r.Id == responseId))
-                    throw new InvalidEntityException(responseId, "response");
-
                 var question = context.Questions.Include(q => q.Responses).ThenInclude(r => r.Votes).ThenInclude(v => v.User).First(q => q.Id == questionId);
                 if (question.IsActive == false)
                     throw new QuestionClosedException();
+
+                // check if the question contains a response with the responseId
+                if(question.Responses.Any(r => r.Id == responseId) == false)
+                    throw new InvalidEntityException(responseId, "response");
+
 
                 ClearOldVotes(question, token.User, responseId);
 
@@ -92,8 +94,14 @@ namespace BuzzerBox.Controllers
 
                 var result = context.Votes.Add(vote).Entity;
                 context.SaveChanges();
-
-                return new JsonResult(result);
+                if (includeFullQuestionAsResult)
+                {
+                    return new JsonResult(question);
+                }
+                else
+                {
+                    return new JsonResult(result);
+                }
             }
             catch (ErrorCodeException ex)
             {

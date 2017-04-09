@@ -43,6 +43,25 @@ namespace BuzzerBox.Controllers
             }
         }
 
+        [HttpGet("tokenTest")]
+        public JsonResult TestSessionToken([RequiredFromQuery] string tokenToTest)
+        {
+            try
+            {
+                dynamic response = new ExpandoObject();
+                response.Success = context.SessionTokens.Any(token => token.Token == tokenToTest);
+                return new JsonResult(response);
+            }
+            catch(ErrorCodeException ex)
+            {
+                return ex.ToJsonResult();
+            }
+            catch(Exception ex)
+            {
+                return ex.ToJsonResult();
+            }
+        }
+
         // GET api/users/5
         [HttpGet("{id}")]
         public JsonResult GetUserDetails([RequiredFromQuery] string sessionToken, int id)
