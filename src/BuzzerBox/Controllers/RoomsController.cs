@@ -105,7 +105,7 @@ namespace BuzzerBox.Controllers
                 var result = context.Questions.Add(addedQuestion).Entity;
                 context.SaveChanges();
 
-                return new JsonResult(question);
+                return new JsonResult(result);
             }
             catch(ErrorCodeException ex)
             {
