@@ -59,7 +59,7 @@ namespace BuzzerBox.Controllers
         }
 
         [HttpPost("{questionId}/vote/{responseId}")]
-        public JsonResult PostVote([RequiredFromQuery] string sessionToken, int questionId, int responseId, [FromQuery] bool includeFullQuestionAsResult = false)
+        public JsonResult PostVote([RequiredFromQuery] string sessionToken, int questionId, int responseId, [FromQuery] bool includeFullQuestionAsResult = false, [FromQuery] bool isDelete = false)
         {
             try
             {
@@ -80,27 +80,39 @@ namespace BuzzerBox.Controllers
                     throw new InvalidEntityException(responseId, "response");
 
 
-                ClearOldVotes(question, token.User, responseId);
-
-                var vote = new Vote
+                if (isDelete == false)
                 {
-                    ResponseId = responseId,
-                    Timestamp = DateTime.Now.ToUtcUnixTimestamp(),
-                    UserId = token.UserId,
-                };
+                    ClearOldVotes(question, token.User, responseId);
 
-                // if a new vote is cast we have to delete the old one
-                context.Votes.ToList().RemoveAll(v => v.ResponseId == vote.ResponseId && v.UserId == vote.UserId);
+                    var vote = new Vote
+                    {
+                        ResponseId = responseId,
+                        Timestamp = DateTime.Now.ToUtcUnixTimestamp(),
+                        UserId = token.UserId,
+                    };
 
-                var result = context.Votes.Add(vote).Entity;
-                context.SaveChanges();
-                if (includeFullQuestionAsResult)
-                {
-                    return new JsonResult(question);
+                    // if a new vote is cast we have to delete the old one
+                    context.Votes.ToList().RemoveAll(v => v.ResponseId == vote.ResponseId && v.UserId == vote.UserId);
+
+                    var result = context.Votes.Add(vote).Entity;
+                    context.SaveChanges();
+                    if (includeFullQuestionAsResult)
+                    {
+                        return new JsonResult(question);
+                    }
+                    else
+                    {
+                        return new JsonResult(result);
+                    }
                 }
                 else
                 {
-                    return new JsonResult(result);
+                    // Remove any vote that corresponds to the userId and responseId.
+                    var votesToRemove = context.Votes.Where(v => v.UserId == token.UserId && v.ResponseId == responseId);
+                    votesToRemove.ToList().ForEach(v => context.Votes.Remove(v));
+                    context.SaveChanges();
+                    question.Responses.ForEach(r => votesToRemove.ToList().ForEach(v => r.Votes.Remove(v)));
+                    return new JsonResult(question);
                 }
             }
             catch (ErrorCodeException ex)

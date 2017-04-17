@@ -5,13 +5,13 @@
       "type": "project",
       "framework": ".NETStandard,Version=v1.0",
       "compile": {
-        "bin/Release/BuzzerEntities.dll": {}
+        "bin/Debug/BuzzerEntities.dll": {}
       },
       "runtime": {
-        "bin/Release/BuzzerEntities.dll": {}
+        "bin/Debug/BuzzerEntities.dll": {}
       },
       "contentFiles": {
-        "bin/Release/BuzzerEntities.pdb": {
+        "bin/Debug/BuzzerEntities.pdb": {
           "buildAction": "None",
           "codeLanguage": "any",
           "copyToOutput": true
