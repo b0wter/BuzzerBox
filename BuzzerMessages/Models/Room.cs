@@ -37,5 +37,13 @@ namespace BuzzerEntities.Models
         /// List of all questions posted to this room.
         /// </summary>
         public List<Question> Questions { get; set; } = new List<Question>();
+        /// <summary>
+        /// Returns the <see cref="Title"/> of this room.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return Title;
+        }
     }
 }

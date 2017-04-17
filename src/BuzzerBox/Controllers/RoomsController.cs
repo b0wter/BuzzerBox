@@ -79,10 +79,30 @@ namespace BuzzerBox.Controllers
                 if (question == null)
                     throw new IncompleteRequestException("question");
 
-                question.Timestamp = DateTime.Now.ToUtcUnixTimestamp();
-                question.User = token.User;
-                question.RoomId = roomId;
-                var result = context.Questions.Add(question).Entity;
+                if (string.IsNullOrWhiteSpace(question.Title))
+                    throw new IncompleteRequestException("question.Title");
+
+                if (question.Responses == null || question.Responses.Count == 0)
+                    throw new IncompleteRequestException("question.Responses");
+
+                if (!context.Rooms.Any(r => r.Id == question.RoomId))
+                    throw new InvalidEntityException(question.RoomId, "room");
+
+                // One needs to make a clean copy of the question posted since it might contain additional information
+                // that can be malicious or malformed.
+                var addedQuestion = new Question
+                {
+                    Title = question.Title,
+                    IsActive = question.IsActive,
+                    RoomId = roomId,
+                    AllowMultipleVotes = question.AllowMultipleVotes,
+                    UserId = token.UserId,
+                    Responses = question.Responses,
+                    Timestamp = DateTime.Now.ToUtcUnixTimestamp(),
+                    User = token.User,
+                };
+
+                var result = context.Questions.Add(addedQuestion).Entity;
                 context.SaveChanges();
 
                 return new JsonResult(question);
@@ -96,9 +116,5 @@ namespace BuzzerBox.Controllers
                 return ex.ToJsonResult();
             }
         }
-
-
-
-
     }
 }
