@@ -8,24 +8,28 @@ namespace BuzzerEntities.Models
 {
     public class Response : BaseModel
     {
-        public int Id { get; set; }
+        private int id;
+        public int Id { get { return id; } set { id = value; NotifyPropertyChanged(); } }
+        private int questionId;
         /// <summary>
         /// Id of the question this is a response for.
         /// </summary>
-        public int QuestionId { get; set; }
+        public int QuestionId { get { return questionId; } set { questionId = value; NotifyPropertyChanged(); } }
         /// <summary>
         /// Instance of the question this response belongs to.
         /// </summary>
         [JsonIgnore]
         public Question Question { get; set; }
+        private string title;
         /// <summary>
         /// Display text of the response.
         /// </summary>
-        public string Title { get; set; }
+        public string Title { get { return title; } set { title = value; NotifyPropertyChanged(); } }
+        private List<Vote> votes;
         /// <summary>
         /// Votes cast for this question.
         /// </summary>
-        public List<Vote> Votes { get; set; }
+        public List<Vote> Votes { get { return votes; } set { votes = value; NotifyPropertyChanged(); } }
         /// <summary>
         /// Amount of votes cast for this response.
         /// </summary>

@@ -12,29 +12,33 @@ namespace BuzzerEntities.Models
     /// </summary>
     public class Vote : BaseModel
     {
-        public int Id { get; set; }
+        private int id;
+        public int Id { get { return id; } set { id = value; NotifyPropertyChanged(); } }
         /// <summary>
         /// Instance of the response that this vote belongs to.
         /// </summary>
         [JsonIgnore]
         public Response Response { get; set; }
+        private int responseId;
         /// <summary>
         /// Id of the response this vote is for.
         /// </summary>
-        public int ResponseId { get; set; }
+        public int ResponseId { get { return responseId; } set { responseId = value; NotifyPropertyChanged(); } }
+        private int userId;
         /// <summary>
         /// Id of the user that voted.
         /// </summary>
-        public int UserId { get; set; }
+        public int UserId { get { return userId; } set { userId = value; NotifyPropertyChanged(); } }
         /// <summary>
         /// Instance of the user this vote belongs to.
         /// </summary>
         [JsonIgnore]
         public User User { get; set; }
+        private long timestamp;
         /// <summary>
         /// Time this vote was cast. Is stored as seconds-based utc epoch.
         /// </summary>
-        public long Timestamp { get; set; }
+        public long Timestamp { get { return timestamp; } set { timestamp = value; NotifyPropertyChanged(); } }
         /// <summary>
         /// Returns the timestamp as an instance of <see cref="DateTime"/>.
         /// </summary>
