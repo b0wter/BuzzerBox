@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using BuzzerBox.Data;
 using Microsoft.EntityFrameworkCore;
+using Hangfire;
+using Hangfire.MemoryStorage;
 
 namespace BuzzerBox
 {
@@ -39,8 +41,8 @@ namespace BuzzerBox
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
             services.AddMvc();
-
             services.AddDbContext<BuzzerContext>(options => options.UseSqlite("Filename=./buzzer.db"));
+            services.AddHangfire(x => x.UseMemoryStorage());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -48,13 +50,10 @@ namespace BuzzerBox
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
             app.UseApplicationInsightsRequestTelemetry();
-
             app.UseApplicationInsightsExceptionTelemetry();
-
             app.UseMvc();
-
+            app.UseHangfireServer();
             DbInitializer.Initialize(context);
         }
     }

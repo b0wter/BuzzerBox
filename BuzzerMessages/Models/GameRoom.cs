@@ -11,5 +11,6 @@ namespace BuzzerEntities.Models
     /// </summary>
     public class GameRoom : Room
     {
+        
     }
 }

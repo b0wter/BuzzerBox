@@ -9,6 +9,7 @@ using BuzzerEntities.Models;
 using System.Dynamic;
 using BuzzerBox.Helpers;
 using BuzzerBox.Helpers.Exceptions;
+using Hangfire;
 
 // For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -115,6 +116,44 @@ namespace BuzzerBox.Controllers
             {
                 return ex.ToJsonResult();
             }
+        }
+
+        [HttpPost("{roomId}/addGameQuestion")]
+        public JsonResult PostGameQuestion([RequiredFromQuery] string sessionToken, int roomId)
+        {
+            try
+            {
+                var token = ValidateSessionToken(sessionToken);
+
+                if (token.User.Level == UserLevels.Guest)
+                    throw new PermissionDeniedException();
+
+                var room = context.Rooms.FirstOrDefault(r => r.Id == roomId);
+                if (room == null)
+                    throw new InvalidEntityException(roomId, "room");
+
+                if (room.GetType() == typeof(GameRoom))
+                    throw new EntityDoesNotSupportException("room", "not a game room");
+
+                var question = Question.CreateGameRoomQuestion(roomId, room.Title);
+                var savedQuestion = context.Questions.Add(question);
+                context.SaveChanges();
+
+                return new JsonResult(savedQuestion);
+            }
+            catch(ErrorCodeException ex)
+            {
+                return ex.ToJsonResult();
+            }
+            catch(Exception ex)
+            {
+                return ex.ToJsonResult();
+            }
+        }
+
+        private void UpdateGameRoomQuestions()
+        {
+
         }
     }
 }

@@ -61,5 +61,40 @@ namespace BuzzerEntities.Models
         /// Sets/Gets if multiple votes of a single user are allowed.
         /// </summary>
         public bool AllowMultipleVotes { get { return allowMultipleVotes; } set { allowMultipleVotes = value; NotifyPropertyChanged(); } }
+        
+        /// <summary>
+        /// Creates a new question with the regular
+        /// </summary>
+        /// <param name="room"></param>
+        /// <returns></returns>
+        public static Question CreateGameRoomQuestion(int roomId, string roomTitle)
+        {
+            var question = new Question
+            {
+                IsActive = true,
+                AllowMultipleVotes = false,
+                RoomId = roomId,
+                Title = $"{roomTitle} - {DateTime.Now.ToString("HH:mm:ss")}",
+            };
+            question.Responses = CreateDefaultGameRoomQuestionResponses();
+            return question;
+        }
+
+        private static List<Response> CreateDefaultGameRoomQuestionResponses()
+        {
+            var responseTitles = new string[] { "#1", "#2", "#3", "#4", "#5", "#6" };
+            var responses = new List<Response>(responseTitles.Length);
+
+            for(int i = 0; i < responseTitles.Length; i++)
+            {
+                var response = new Response
+                {
+                    Title = responseTitles[i]
+                };
+                responses.Add(response);
+            }
+
+            return responses;
+        }
     }
 }
