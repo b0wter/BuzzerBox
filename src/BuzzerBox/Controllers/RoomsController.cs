@@ -135,11 +135,22 @@ namespace BuzzerBox.Controllers
                 if (room.GetType() == typeof(GameRoom))
                     throw new EntityDoesNotSupportException("room", "not a game room");
 
+                // To reduce the overall amount of questions that are displayed all questions beside the new and the second newest question are removed.
+                var secondNewestQuestion = context.Questions.Last();
                 var question = Question.CreateGameRoomQuestion(roomId, room.Title);
                 var savedQuestion = context.Questions.Add(question);
                 context.SaveChanges();
 
-                return new JsonResult(savedQuestion);
+                var oldQuestions = context.Questions.Where(q => q != savedQuestion.Entity && q != secondNewestQuestion);
+                foreach (var item in oldQuestions)
+                    context.Questions.Remove(item);
+                context.SaveChanges();
+
+                dynamic response = new ExpandoObject();
+                response.NewQuestion = savedQuestion;
+                response.RemovedQuestions = oldQuestions;
+
+                return new JsonResult(response);
             }
             catch(ErrorCodeException ex)
             {
