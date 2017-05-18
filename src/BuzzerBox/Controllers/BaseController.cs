@@ -12,11 +12,11 @@ namespace BuzzerBox.Controllers
 {
     public class BaseController : Controller
     {
-        protected readonly BuzzerContext context;
+        protected IDatabaseContextProvider Context { get; }
 
-        public BaseController(BuzzerContext context)
+        public BaseController(IDatabaseContextProvider context)
         {
-            this.context = context;
+            this.Context = context;
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace BuzzerBox.Controllers
         /// <returns>Instance of the session token belonging to this token.</returns>
         protected SessionToken ValidateSessionToken(string token)
         {
-            var sessionToken = context.SessionTokens.Include(x => x.User).FirstOrDefault(x => x.Token == token);
+            var sessionToken = Context.SessionTokens.Include(x => x.User).FirstOrDefault(x => x.Token == token);
 
             if (sessionToken == null)
                 throw new InvalidSessionTokenException();
@@ -34,7 +34,7 @@ namespace BuzzerBox.Controllers
             if(sessionToken.User == null)
             {
                 // This should never happen. A session token needs to be tied to a user. Otherwise its worthless.
-                context.SessionTokens.RemoveRange(context.SessionTokens.Where(x => x.Token == token));
+                Context.SessionTokens.RemoveRange(Context.SessionTokens.Where(x => x.Token == token));
                 throw new InvalidSessionTokenException();
             }
 

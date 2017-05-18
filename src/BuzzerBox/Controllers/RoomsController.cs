@@ -32,9 +32,9 @@ namespace BuzzerBox.Controllers
                 ValidateSessionToken(sessionToken);
                 IEnumerable<Room> rooms = null;
                 if (includeQuestions)
-                    rooms = context.Rooms.Include(r => r.Questions).ThenInclude(q => q.Responses).ThenInclude(r => r.Votes).AsNoTracking().ToList();
+                    rooms = Context.Rooms.Include(r => r.Questions).ThenInclude(q => q.Responses).ThenInclude(r => r.Votes).AsNoTracking().ToList();
                 else
-                    rooms = context.Rooms.ToList();
+                    rooms = Context.Rooms.ToList();
                 return new JsonResult(rooms);
             }
             catch(ErrorCodeException ex)
@@ -54,7 +54,7 @@ namespace BuzzerBox.Controllers
         {
             try { 
                 ValidateSessionToken(sessionToken);
-                return new JsonResult(context.Rooms.Include(r => r.Questions).ThenInclude(q => q.Responses).AsNoTracking().FirstOrDefault(x => x.Id == id));
+                return new JsonResult(Context.Rooms.Include(r => r.Questions).ThenInclude(q => q.Responses).AsNoTracking().FirstOrDefault(x => x.Id == id));
             }
             catch(ErrorCodeException ex)
             {
@@ -86,7 +86,7 @@ namespace BuzzerBox.Controllers
                 if (question.Responses == null || question.Responses.Count == 0)
                     throw new IncompleteRequestException("question.Responses");
 
-                if (!context.Rooms.Any(r => r.Id == question.RoomId))
+                if (!Context.Rooms.Any(r => r.Id == roomId))
                     throw new InvalidEntityException(question.RoomId, "room");
 
                 // One needs to make a clean copy of the question posted since it might contain additional information
@@ -103,8 +103,8 @@ namespace BuzzerBox.Controllers
                     User = token.User,
                 };
 
-                var result = context.Questions.Add(addedQuestion).Entity;
-                context.SaveChanges();
+                var result = Context.Questions.Add(addedQuestion).Entity;
+                Context.SaveChanges();
 
                 return new JsonResult(result);
             }
@@ -128,7 +128,7 @@ namespace BuzzerBox.Controllers
                 if (token.User.Level == UserLevels.Guest)
                     throw new PermissionDeniedException();
 
-                var room = context.Rooms.FirstOrDefault(r => r.Id == roomId);
+                var room = Context.Rooms.FirstOrDefault(r => r.Id == roomId);
                 if (room == null)
                     throw new InvalidEntityException(roomId, "room");
 
@@ -136,15 +136,15 @@ namespace BuzzerBox.Controllers
                     throw new EntityDoesNotSupportException("room", "not a game room");
 
                 // To reduce the overall amount of questions that are displayed all questions beside the new and the second newest question are removed.
-                var secondNewestQuestion = context.Questions.Last();
+                var secondNewestQuestion = Context.Questions.Last();
                 var question = Question.CreateGameRoomQuestion(roomId, room.Title);
-                var savedQuestion = context.Questions.Add(question);
-                context.SaveChanges();
+                var savedQuestion = Context.Questions.Add(question);
+                Context.SaveChanges();
 
-                var oldQuestions = context.Questions.Where(q => q != savedQuestion.Entity && q != secondNewestQuestion);
+                var oldQuestions = Context.Questions.Where(q => q != savedQuestion.Entity && q != secondNewestQuestion);
                 foreach (var item in oldQuestions)
-                    context.Questions.Remove(item);
-                context.SaveChanges();
+                    Context.Questions.Remove(item);
+                Context.SaveChanges();
 
                 dynamic response = new ExpandoObject();
                 response.NewQuestion = savedQuestion;

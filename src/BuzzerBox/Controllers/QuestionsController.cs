@@ -26,7 +26,7 @@ namespace BuzzerBox.Controllers
             try
             {
                 ValidateSessionToken(sessionToken);
-                return new JsonResult(context.Questions.Include(q => q.Responses).ThenInclude(r => r.Votes).Where(q => q.Timestamp >= timeStamp).AsNoTracking().ToList());
+                return new JsonResult(Context.Questions.Include(q => q.Responses).ThenInclude(r => r.Votes).Where(q => q.Timestamp >= timeStamp).AsNoTracking().ToList());
             }
             catch(ErrorCodeException ex)
             {
@@ -45,8 +45,47 @@ namespace BuzzerBox.Controllers
             try
             {
                 ValidateSessionToken(sessionToken);
-                var question = context.Questions.Include(q => q.Responses).ThenInclude(r => r.Votes).AsNoTracking().First(q => q.Id == id);
+                var question = Context.Questions.Include(q => q.Responses).ThenInclude(r => r.Votes).AsNoTracking().First(q => q.Id == id);
                 return new JsonResult(question);
+            }
+            catch(ErrorCodeException ex)
+            {
+                return ex.ToJsonResult();
+            }
+            catch(Exception ex)
+            {
+                return ex.ToJsonResult();
+            }
+        }
+
+        [HttpGet("filter")]
+        public JsonResult GetFilteredQuestions([RequiredFromQuery] string sessionToken, int id = int.MinValue, string title = null, bool? isActive = null, int roomId = int.MinValue, int sinceTimestamp = 0, int userId = int.MinValue)
+        {
+            try
+            {
+                ValidateSessionToken(sessionToken);
+
+                var filtered = Context.Questions.AsNoTracking();
+
+                if (id != int.MinValue)
+                    filtered = filtered.Where(q => q.Id == id);
+
+                if (title != null)
+                    filtered = filtered.Where(q => q.Title.ToLower().Contains(title.ToLower()));
+
+                if (isActive != null)
+                    filtered = filtered.Where(q => q.IsActive == (bool)isActive);
+
+                if (roomId != int.MinValue)
+                    filtered = filtered.Where(q => q.RoomId == roomId);
+
+                if (sinceTimestamp != 0)
+                    filtered = filtered.Where(q => q.Timestamp >= sinceTimestamp);
+
+                if (userId != int.MinValue)
+                    filtered = filtered.Where(q => q.UserId == userId);
+
+                return new JsonResult(filtered);
             }
             catch(ErrorCodeException ex)
             {
@@ -68,10 +107,10 @@ namespace BuzzerBox.Controllers
                 if (token.User.Level == UserLevels.Guest)
                     throw new PermissionDeniedException();
 
-                if (!context.Questions.Any(q => q.Id == questionId))
+                if (!Context.Questions.Any(q => q.Id == questionId))
                     throw new InvalidEntityException(questionId, "question");
 
-                var question = context.Questions.Include(q => q.Responses).ThenInclude(r => r.Votes).ThenInclude(v => v.User).First(q => q.Id == questionId);
+                var question = Context.Questions.Include(q => q.Responses).ThenInclude(r => r.Votes).ThenInclude(v => v.User).First(q => q.Id == questionId);
                 if (question.IsActive == false)
                     throw new QuestionClosedException();
 
@@ -92,10 +131,10 @@ namespace BuzzerBox.Controllers
                     };
 
                     // if a new vote is cast we have to delete the old one
-                    context.Votes.ToList().RemoveAll(v => v.ResponseId == vote.ResponseId && v.UserId == vote.UserId);
+                    Context.Votes.ToList().RemoveAll(v => v.ResponseId == vote.ResponseId && v.UserId == vote.UserId);
 
-                    var result = context.Votes.Add(vote).Entity;
-                    context.SaveChanges();
+                    var result = Context.Votes.Add(vote).Entity;
+                    Context.SaveChanges();
                     if (includeFullQuestionAsResult)
                     {
                         return new JsonResult(question);
@@ -108,9 +147,9 @@ namespace BuzzerBox.Controllers
                 else
                 {
                     // Remove any vote that corresponds to the userId and responseId.
-                    var votesToRemove = context.Votes.Where(v => v.UserId == token.UserId && v.ResponseId == responseId);
-                    votesToRemove.ToList().ForEach(v => context.Votes.Remove(v));
-                    context.SaveChanges();
+                    var votesToRemove = Context.Votes.Where(v => v.UserId == token.UserId && v.ResponseId == responseId);
+                    votesToRemove.ToList().ForEach(v => Context.Votes.Remove(v));
+                    Context.SaveChanges();
                     question.Responses.ForEach(r => votesToRemove.ToList().ForEach(v => r.Votes.Remove(v)));
                     return new JsonResult(question);
                 }
@@ -127,7 +166,7 @@ namespace BuzzerBox.Controllers
 
         private FilteredUser FetchUserVotes(FilteredUser user)
         {
-            var detailedUser = context.Users.Include(u => u.Votes).ThenInclude(v => v.Response).First(u => user.Id == u.Id);
+            var detailedUser = Context.Users.Include(u => u.Votes).ThenInclude(v => v.Response).First(u => user.Id == u.Id);
             return detailedUser;
         }
 
@@ -142,7 +181,7 @@ namespace BuzzerBox.Controllers
         private void ClearOldVotesWithMatchingResponseId(FilteredUser user, int responseId)
         {
             var oldVotes = user.Votes.Where(v => v.ResponseId == responseId).ToList();
-            oldVotes.ForEach(o => context.Votes.Remove(o));
+            oldVotes.ForEach(o => Context.Votes.Remove(o));
         }
 
         private void ClearOldVoteIfNotMultipleChoice(Question question, FilteredUser user)
@@ -150,7 +189,7 @@ namespace BuzzerBox.Controllers
             if (question.AllowMultipleVotes == false)
             {
                 var oldVotes = user.Votes.Where(v => question.Responses.Any(r => r.Id == v.ResponseId)).ToList();
-                oldVotes.ForEach(o => context.Votes.Remove(o));
+                oldVotes.ForEach(o => Context.Votes.Remove(o));
             }
         }
 
@@ -160,12 +199,12 @@ namespace BuzzerBox.Controllers
             try
             {
                 var token = ValidateSessionToken(sessionToken);
-                var question = context.Questions.First(q => q.Id == questionId);
+                var question = Context.Questions.First(q => q.Id == questionId);
 
                 if (token.User.Level == UserLevels.Admin || token.UserId == question.UserId)
                 {
                     question.IsActive = false;
-                    context.SaveChanges();
+                    Context.SaveChanges();
                     return new JsonResult(question);
                 }
                 else

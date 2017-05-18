@@ -34,7 +34,7 @@ namespace BuzzerBox.Controllers
             try
             {
                 ValidateSessionToken(sessionToken);
-                var filteredUsers = FilterSensitiveInformation(context.Users.ToList());
+                var filteredUsers = FilterSensitiveInformation(Context.Users.ToList());
                 return new JsonResult(filteredUsers);
             }
             catch(ErrorCodeException ex)
@@ -49,7 +49,7 @@ namespace BuzzerBox.Controllers
             try
             {
                 dynamic response = new ExpandoObject();
-                response.Success = context.SessionTokens.Any(token => token.Token == tokenToTest);
+                response.Success = Context.SessionTokens.Any(token => token.Token == tokenToTest);
                 return new JsonResult(response);
             }
             catch(ErrorCodeException ex)
@@ -92,7 +92,7 @@ namespace BuzzerBox.Controllers
             //TODO: REMOVE THIS FUNCTION FOR PRODUCTION!
             try
             {
-                return new JsonResult(context.RegistrationTokens.Where(t => t.WasUsed == false).ToList());
+                return new JsonResult(Context.RegistrationTokens.Where(t => t.WasUsed == false).ToList());
             }
             catch(ErrorCodeException ex)
             {
@@ -111,7 +111,7 @@ namespace BuzzerBox.Controllers
         /// <returns></returns>
         private FilteredUser GetUserInformation(int id)
         {
-            var user = context.Users.FirstOrDefault(u => u.Id == id);
+            var user = Context.Users.FirstOrDefault(u => u.Id == id);
             if (user != null)
                 return FilteredUser.FromUser(user);
             else
@@ -162,8 +162,8 @@ namespace BuzzerBox.Controllers
             var newTokens = new List<RegistrationToken>(id);
             for (int i = 0; i < id; i++)
                 newTokens.Add(new RegistrationToken());
-            context.RegistrationTokens.AddRange(newTokens);
-            context.SaveChanges();
+            Context.RegistrationTokens.AddRange(newTokens);
+            Context.SaveChanges();
             return new JsonResult(newTokens.Select(t => t.Token));
 #else
             return new JsonResult("Tokens cannot be generated automatically. Please ask the administrator for a new token.");
@@ -190,7 +190,7 @@ namespace BuzzerBox.Controllers
         /// <param name="token"></param>
         private void ValidateRegistrationToken(string token)
         {
-            if (context.RegistrationTokens.Any(x => x.Token == token && x.WasUsed == false) == false)
+            if (Context.RegistrationTokens.Any(x => x.Token == token && x.WasUsed == false) == false)
                 throw new InvalidRegistrationTokenException();
         }
 
@@ -202,7 +202,7 @@ namespace BuzzerBox.Controllers
         {
             if (string.IsNullOrWhiteSpace(username))
                 throw new IncompleteRequestException("username");
-            if (context.Users.Any(x => x.Name == username))
+            if (Context.Users.Any(x => x.Name == username))
                 throw new UsernameAlreadyInUseException();
         }
 
@@ -243,15 +243,15 @@ namespace BuzzerBox.Controllers
         /// <param name="user"></param>
         private void SaveUserToDataBase(User user)
         {
-            context.Users.Add(user);
-            context.SaveChanges();
+            Context.Users.Add(user);
+            Context.SaveChanges();
         }
 
         private void CloseRegistrationToken(string token)
         {
-            var localToken = context.RegistrationTokens.First(t => t.Token == token);
+            var localToken = Context.RegistrationTokens.First(t => t.Token == token);
             localToken.WasUsed = true;
-            context.SaveChanges();
+            Context.SaveChanges();
         }
 
         /// <summary>
@@ -260,8 +260,8 @@ namespace BuzzerBox.Controllers
         /// <param name="token"></param>
         private void MarkTokenAsUsed(string token)
         {
-            context.RegistrationTokens.First(x => x.Token == token).WasUsed = true;
-            context.SaveChanges();
+            Context.RegistrationTokens.First(x => x.Token == token).WasUsed = true;
+            Context.SaveChanges();
         }
 
         /// <summary>
@@ -274,7 +274,7 @@ namespace BuzzerBox.Controllers
         private SessionToken LogUserIn(string username, string password)
         {
             // check if the user exists
-            var user = context.Users.FirstOrDefault(u => u.Name == username);
+            var user = Context.Users.FirstOrDefault(u => u.Name == username);
             if (user == null)
                 throw new FailedLoginException();
 
@@ -291,8 +291,8 @@ namespace BuzzerBox.Controllers
             {
                 UserId = user.Id,
             };
-            context.SessionTokens.Add(sessionToken);
-            context.SaveChanges();
+            Context.SessionTokens.Add(sessionToken);
+            Context.SaveChanges();
 
             return sessionToken;
         }
