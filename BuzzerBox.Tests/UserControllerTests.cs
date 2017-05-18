@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace BuzzerBox.Tests
 {
     [TestFixture]
-    public class TestClass
+    public class UserControllerTests
     {
         [Test]
         public void TestMethod()

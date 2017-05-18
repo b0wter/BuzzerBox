@@ -24,6 +24,7 @@ namespace BuzzerBox.Controllers
         /// </summary>
         /// <param name="token"></param>
         /// <returns>Instance of the session token belonging to this token.</returns>
+        /// <exception cref="InvalidSessionTokenException">If the session token is invalid.</exception>
         protected SessionToken ValidateSessionToken(string token)
         {
             var sessionToken = Context.SessionTokens.Include(x => x.User).FirstOrDefault(x => x.Token == token);
