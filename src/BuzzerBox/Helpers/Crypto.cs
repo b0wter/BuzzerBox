@@ -19,7 +19,7 @@ namespace BuzzerBox.Helpers
         /// <param name="password">Password that will be hashed.</param>
         /// <param name="salt">User-specific salt to harden the password.</param>
         /// <returns></returns>
-        internal static string CreatePasswordHash(string password, byte[] salt)
+        public static string CreatePasswordHash(string password, byte[] salt)
         {
             string hash = Convert.ToBase64String(KeyDerivation.Pbkdf2(password, salt, KeyDerivationPrf.HMACSHA256, HASH_ITERATION_COUNT, 256 / 8));
             return hash;
@@ -31,7 +31,7 @@ namespace BuzzerBox.Helpers
         /// <param name="password">Password that will be hashed.</param>
         /// <param name="salt">Base64 encoded string of the salt.</param>
         /// <returns></returns>
-        internal static string CreatePasswordHash(string password, string salt)
+        public static string CreatePasswordHash(string password, string salt)
         {
             byte[] rawSalt = Convert.FromBase64String(salt);
             return CreatePasswordHash(password, rawSalt);
@@ -41,7 +41,7 @@ namespace BuzzerBox.Helpers
         /// Creates a 128 bit salt to create password hashes.
         /// </summary>
         /// <returns></returns>
-        internal static byte[] CreateSalt()
+        public static byte[] CreateSalt()
         {
             byte[] salt = new byte[128 / 8];
             using (var rng = RandomNumberGenerator.Create())

@@ -109,7 +109,7 @@ namespace BuzzerBox.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        private FilteredUser GetUserInformation(int id)
+        internal FilteredUser GetUserInformation(int id)
         {
             var user = Context.Users.FirstOrDefault(u => u.Id == id);
             if (user != null)
@@ -247,6 +247,10 @@ namespace BuzzerBox.Controllers
             Context.SaveChanges();
         }
 
+        /// <summary>
+        /// Marks a registration token as used.
+        /// </summary>
+        /// <param name="token"></param>
         private void CloseRegistrationToken(string token)
         {
             var localToken = Context.RegistrationTokens.First(t => t.Token == token);

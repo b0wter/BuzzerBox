@@ -96,5 +96,35 @@ namespace BuzzerEntities.Models
 
             return responses;
         }
+
+        /*
+        /// <summary>
+        /// Checks if every the value of every property of this questions matches those of another question.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns>true if all values match, false if they dont match or <paramref name="obj"/> is of the wrong type</returns>
+        public override bool Equals(object obj)
+        {
+            var other = obj as Question;
+            if (other == null)
+                return false;
+
+            // Responses must be tested seperately since they are complex objects.
+            var responsesMatch = this.Responses.All(other.Responses.Contains) && this.Responses.Count == other.Responses.Count;
+
+            var matching = 
+                this.AllowMultipleVotes == other.AllowMultipleVotes && 
+                this.DateTime == other.DateTime && 
+                this.Id == other.Id && 
+                this.IsActive == other.IsActive && 
+                this.Room == other.Room && 
+                this.RoomId == other.RoomId && 
+                this.Timestamp == other.Timestamp && 
+                this.Title == other.Title && 
+                this.User == other.User && 
+                this.UserId == other.UserId;
+            return matching;
+        }
+        */
     }
 }
