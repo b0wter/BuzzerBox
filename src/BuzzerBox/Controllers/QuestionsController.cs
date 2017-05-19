@@ -14,7 +14,7 @@ namespace BuzzerBox.Controllers
     [Route("api/[controller]")]
     public class QuestionsController : BaseController
     {
-        public QuestionsController(IDatabaseContextProvider context) : base(context)
+        public QuestionsController(BuzzerContext context) : base(context)
         {
             //
         }

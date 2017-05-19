@@ -12,9 +12,9 @@ namespace BuzzerBox.Controllers
 {
     public class BaseController : Controller
     {
-        protected IDatabaseContextProvider Context { get; }
+        protected BuzzerContext Context { get; }
 
-        public BaseController(IDatabaseContextProvider context)
+        public BaseController(BuzzerContext context)
         {
             this.Context = context;
         }

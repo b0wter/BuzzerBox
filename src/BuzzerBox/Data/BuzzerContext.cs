@@ -11,53 +11,15 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace BuzzerBox.Data
 {
-    public interface IDatabaseContextProvider
+    public class BuzzerContext : DbContext
     {
-        DbSet<Room> Rooms { get; set; }
-        DbSet<Question> Questions { get; set; }
-        DbSet<User> Users { get; set; }
-        DbSet<Response> Responses { get; set; }
-        DbSet<Vote> Votes { get; set; }
-        DbSet<RegistrationToken> RegistrationTokens { get; set; }
-        DbSet<SessionToken> SessionTokens { get; set; }
-        DatabaseFacade Database { get; }
-        ChangeTracker ChangeTracker { get; }
-        IModel Model { get; }
-        int SaveChanges();
-        int SaveChanges(bool acceptAllChangesOnSuccess);
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
-        Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken);
-        void Dispose();
-        EntityEntry Entry(object entity);
-        EntityEntry Add(object entity);
-        Task<EntityEntry> AddAsync(object entity, CancellationToken cancellationToken);
-        EntityEntry Attach(object entity);
-        EntityEntry Update(object entity);
-        EntityEntry Remove(object entity);
-        void AddRange(params object[] entities);
-        Task AddRangeAsync(params object[] entities);
-        void AttachRange(params object[] entities);
-        void UpdateRange(params object[] entities);
-        void RemoveRange(params object[] entities);
-        void AddRange(IEnumerable<object> entities);
-        Task AddRangeAsync(IEnumerable<object> entities, CancellationToken cancellationToken);
-        void AttachRange(IEnumerable<object> entities);
-        void UpdateRange(IEnumerable<object> entities);
-        void RemoveRange(IEnumerable<object> entities);
-        object Find(Type entityType, params object[] keyValues);
-        Task<object> FindAsync(Type entityType, params object[] keyValues);
-        Task<object> FindAsync(Type entityType, object[] keyValues, CancellationToken cancellationToken);
-    }
-
-    public class BuzzerContext : DbContext, IDatabaseContextProvider
-    {
-        public DbSet<Room> Rooms { get; set; }
-        public DbSet<Question> Questions { get; set; }
-        public DbSet<User> Users { get; set; }
-        public DbSet<Response> Responses { get; set; }
-        public DbSet<Vote> Votes { get; set; }
-        public DbSet<RegistrationToken> RegistrationTokens {get;set;}
-        public DbSet<SessionToken> SessionTokens { get; set; }
+        public virtual DbSet<Room> Rooms { get; set; }
+        public virtual DbSet<Question> Questions { get; set; }
+        public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<Response> Responses { get; set; }
+        public virtual DbSet<Vote> Votes { get; set; }
+        public virtual DbSet<RegistrationToken> RegistrationTokens {get;set;}
+        public virtual DbSet<SessionToken> SessionTokens { get; set; }
 
         public BuzzerContext(DbContextOptions<BuzzerContext> options) : base(options)
         {

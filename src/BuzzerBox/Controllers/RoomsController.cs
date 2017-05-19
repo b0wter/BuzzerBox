@@ -18,7 +18,7 @@ namespace BuzzerBox.Controllers
     [Route("api/[controller]")]
     public class RoomsController : BaseController
     {
-        public RoomsController(IDatabaseContextProvider context) : base(context)
+        public RoomsController(BuzzerContext context) : base(context)
         {
             // needs to be called to set context in base class!
         }
@@ -99,18 +99,6 @@ namespace BuzzerBox.Controllers
                     AllowMultipleVotes = question.AllowMultipleVotes,
                     UserId = token.UserId,
                     Responses = question.Responses,
-
-        /*
-        public InvalidRegistrationTokenException() : base(string.Empty)
-        {
-            //
-        }
-
-        public InvalidRegistrationTokenException(string message) : base(message)
-        {
-            //
-        }
-        */
                     Timestamp = DateTime.Now.ToUtcUnixTimestamp(),
                     User = token.User,
                 };

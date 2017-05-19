@@ -22,7 +22,7 @@ namespace BuzzerBox.Controllers
         /// The user controller handles all operations related to user interactions like login, user registration, ...
         /// </summary>
         /// <param name="context"></param>
-        public UsersController(IDatabaseContextProvider context) : base(context)
+        public UsersController(BuzzerContext context) : base(context)
         {
             //
         }
