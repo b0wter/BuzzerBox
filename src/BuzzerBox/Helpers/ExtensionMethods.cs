@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BuzzerBox.Helpers.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -23,6 +24,9 @@ namespace BuzzerBox.Helpers
 
         public static JsonResult ToJsonResult(this Exception ex)
         {
+            if (ex.GetType() == typeof(ErrorCodeException))
+                return ((ErrorCodeException)ex).ToJsonResult();
+
             dynamic response = new ExpandoObject();
             response.Message = ex.Message;
             response.Code = "ERR99";

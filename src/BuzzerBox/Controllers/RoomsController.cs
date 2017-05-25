@@ -22,7 +22,7 @@ namespace BuzzerBox.Controllers
         {
             // needs to be called to set context in base class!
         }
-        
+
         // GET: api/rooms
         [HttpGet]
         public JsonResult Get([RequiredFromQuery]string sessionToken, [FromQuery]bool includeQuestions = false)
@@ -37,11 +37,11 @@ namespace BuzzerBox.Controllers
                     rooms = Context.Rooms.ToList();
                 return new JsonResult(rooms);
             }
-            catch(ErrorCodeException ex)
+            catch (ErrorCodeException ex)
             {
                 return ex.ToJsonResult();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return ex.ToJsonResult();
             }
@@ -52,15 +52,15 @@ namespace BuzzerBox.Controllers
         [HttpGet("{id}")]
         public JsonResult Get([RequiredFromQuery]string sessionToken, int id)
         {
-            try { 
+            try {
                 ValidateSessionToken(sessionToken);
                 return new JsonResult(Context.Rooms.Include(r => r.Questions).ThenInclude(q => q.Responses).AsNoTracking().FirstOrDefault(x => x.Id == id));
             }
-            catch(ErrorCodeException ex)
+            catch (ErrorCodeException ex)
             {
                 return ex.ToJsonResult();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return ex.ToJsonResult();
             }
@@ -73,49 +73,54 @@ namespace BuzzerBox.Controllers
             try
             {
                 var token = ValidateSessionToken(sessionToken);
-
-                if (token.User.Level == UserLevels.Guest)
-                    throw new PermissionDeniedException();
-
-                if (question == null)
-                    throw new IncompleteRequestException("question");
-
-                if (string.IsNullOrWhiteSpace(question.Title))
-                    throw new IncompleteRequestException("question.Title");
-
-                if (question.Responses == null || question.Responses.Count == 0)
-                    throw new IncompleteRequestException("question.Responses");
-
-                if (!Context.Rooms.Any(r => r.Id == roomId))
-                    throw new InvalidEntityException(question.RoomId, "room");
-
-                // One needs to make a clean copy of the question posted since it might contain additional information
-                // that can be malicious or malformed.
-                var addedQuestion = new Question
-                {
-                    Title = question.Title,
-                    IsActive = question.IsActive,
-                    RoomId = roomId,
-                    AllowMultipleVotes = question.AllowMultipleVotes,
-                    UserId = token.UserId,
-                    Responses = question.Responses,
-                    Timestamp = DateTime.Now.ToUtcUnixTimestamp(),
-                    User = token.User,
-                };
-
-                var result = Context.Questions.Add(addedQuestion).Entity;
-                Context.SaveChanges();
+                var result = PostNewQuestion(token, question, roomId);
 
                 return new JsonResult(result);
             }
-            catch(ErrorCodeException ex)
+            catch (ErrorCodeException ex)
             {
                 return ex.ToJsonResult();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return ex.ToJsonResult();
             }
+        }
+
+        public Question PostNewQuestion(SessionToken token, Question question, int roomId)
+        {
+            if (token.User.Level == UserLevels.Guest)
+                throw new PermissionDeniedException();
+
+            if (question == null)
+                throw new IncompleteRequestException("question");
+
+            if (string.IsNullOrWhiteSpace(question.Title))
+                throw new IncompleteRequestException("question.Title");
+
+            if (question.Responses == null || question.Responses.Count == 0)
+                throw new IncompleteRequestException("question.Responses");
+
+            if (!Context.Rooms.Any(r => r.Id == roomId))
+                throw new InvalidEntityException(question.RoomId, "room");
+
+            // One needs to make a clean copy of the question posted since it might contain additional information
+            // that can be malicious or malformed.
+            var addedQuestion = new Question
+            {
+                Title = question.Title,
+                IsActive = question.IsActive,
+                RoomId = roomId,
+                AllowMultipleVotes = question.AllowMultipleVotes,
+                UserId = token.UserId,
+                Responses = question.Responses,
+                Timestamp = DateTime.Now.ToUtcUnixTimestamp(),
+                User = token.User,
+            };
+
+            var result = Context.Questions.Add(addedQuestion).Entity;
+            Context.SaveChanges();
+            return result;
         }
 
         [HttpPost("{roomId}/addGameQuestion")]
